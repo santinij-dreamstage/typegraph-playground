@@ -1,0 +1,14 @@
+{
+  "name": "default",
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "ds",
+  "password": "password",
+  "database": "dreamstage",
+  "synchronize": false,
+  "logging": true,
+  "entities": [
+    "src/entity/*.*"
+  ]
+}
