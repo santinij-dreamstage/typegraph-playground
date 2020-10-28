@@ -4,10 +4,6 @@ import bcrypt from 'bcryptjs';
 
 @Resolver()
 export class RegisterResolver {
-  @Query(() => String)
-  async hello() {
-    return "Hello World!";
-  }
 
   @Mutation(() => User)
   async register(

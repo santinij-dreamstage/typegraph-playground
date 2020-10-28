@@ -53,7 +53,7 @@ export class Event extends BaseEntity {
   @Column({ name: "end_time_utc" })
   endedAt?: Date;
 
-  @Field(type => Genre)
+  @Field(() => Genre)
   @Column("integer", {transformer: new GenreTransformer()})
   genre: Genre;
 

@@ -1,6 +1,5 @@
 import { Event } from "../../entity/Event";
-import { Field, InputType, registerEnumType } from "type-graphql";
-import { getRepository } from "typeorm";
+import { Field, InputType } from "type-graphql";
 import {Genre} from "./Genre"
 
 
@@ -19,7 +18,7 @@ export class SearchEvent implements Partial<Event> {
   id?: string;
   @Field({ nullable: true })
   name?: string;
-  @Field(type => Genre, { nullable: true, })
+  @Field(() => Genre, { nullable: true, })
   genre?: Genre;
   @Field({ nullable: true })
   slug?: string;

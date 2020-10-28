@@ -11,20 +11,21 @@ class Events {
   ) {
     this.matching = events;
   }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   @Field(() => [Event!]!)
   matching: Event[]
 }
 
-@Resolver(of => Event)
+@Resolver(() => Event)
 export class EventResolver {  //implements ResolverInterface<Event>
   constructor(
     @InjectRepository(Event) private readonly eventRepository: Repository<Event>,
   ) { }
 
   @Query(() => Events)
-  async events(@Arg("search", { nullable: true }) eventSearch: SearchEvent) {
+  async events(@Arg("search", { nullable: true }) eventSearch: SearchEvent): Promise<Events> {
     console.warn(`args: ${JSON.stringify(eventSearch)}`);
-    let filters = [];
+    const filters = [];
     if (eventSearch) {
       if (eventSearch.id) {
         filters.push({ id: eventSearch.id });
@@ -46,12 +47,13 @@ export class EventResolver {  //implements ResolverInterface<Event>
   }
 
   @Query(() => Event)
-  async event(@Arg("id", type => ID) eventId: string) {
+  async event(@Arg("id", () => ID) eventId: string): Promise<Event | undefined> {
     return this.eventRepository.findOne(eventId);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unused-vars
   @Mutation(CreateEventInput => Event!)
-  addEvent(@Arg("event") newEvent: CreateEventInput, @Ctx() ctx: Context): Promise<Event> {
+  addEvent(@Arg("event") _newEvent: CreateEventInput, @Ctx() _ctx: Context): Promise<Event> {
     return new Promise(() => new Event());
   }
 

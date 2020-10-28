@@ -1,6 +1,4 @@
 
-import { Event } from "./entity/Event";
-
 export interface Context {
-  
+  fake: "fake"
 }
