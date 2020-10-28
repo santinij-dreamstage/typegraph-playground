@@ -1,11 +1,14 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
+import { Container } from "typedi";
 import Express from "express";
 import { buildSchema } from "type-graphql";
-import { createConnection, getConnectionOptions } from "typeorm";
+import { createConnection, useContainer, getConnectionOptions } from "typeorm";
 import { RegisterResolver } from "./modules/user/Register";
-import { AllEventsResolver } from "./modules/event/AllEvents";
+import { EventResolver } from "./modules/event/Resolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+
+useContainer(Container);
 
 const main = async () => {
   await getConnectionOptions().then(connectionOptions => {
@@ -16,7 +19,8 @@ const main = async () => {
 
 
   const schema = await buildSchema({
-    resolvers: [RegisterResolver, AllEventsResolver]
+    resolvers: [RegisterResolver, EventResolver],
+    container: Container
   });
   const apolloServer = new ApolloServer({ schema });
 

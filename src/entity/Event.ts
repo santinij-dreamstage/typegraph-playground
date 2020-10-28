@@ -1,5 +1,6 @@
-import { Field, ID, ObjectType, Int } from "type-graphql";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Genre, GenreTransformer } from "../modules/event/Genre";
+import { Field, ID, ObjectType } from "type-graphql";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
@@ -52,6 +53,14 @@ export class Event extends BaseEntity {
   @Column({ name: "end_time_utc" })
   endedAt?: Date;
 
+  @Field(type => Genre)
+  @Column("integer", {transformer: new GenreTransformer()})
+  genre: Genre;
+
+  @Field()
+  @Column({ name: "is_featured" })
+  featured: boolean;
+
   @Field({ nullable: true })
   @Column()
   socialDescription?: string
@@ -65,83 +74,11 @@ export class Event extends BaseEntity {
   ageRestriction?: number;
 
   @Field()
-  @Column({ name: "created_time_utc" })
+  @CreateDateColumn({ type: "timestamptz", name: "created_time_utc" })
   createdAt: Date;
 
-
-  /**
-   *
-   
-    
-    
-    
-    @Field({nullable: true})
-    @Column()
-    owner: User @juniper(ownership: "owned") # only returned if you are the owner
-    @Field({nullable: true})
-    @Column()
-    venue: Venue! @juniper(ownership: "owned")
-
-    @Field({nullable: true})
-    @Column()
-    genre: Genre! @juniper(ownership: "owned")
-    @Field({ nullable: true })
-  @Column()
-  genreDescription: string;
-
-    @Field(type => [String], {nullable: true})
-  @Column()
-  tags: string[];
-
   @Field()
-  @Column()
-  featured: boolean
-
-    
-    @Field({nullable: true})
-    @Column()
-    performers(search: SearchPerformer): [EventPerformer!]! @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    eventTickets: [EventTicket!]! @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    status: EventStatus! @juniper(ownership: "owned")
-
-    
-    @Field({nullable: true})
-    @Column()
-    promoVideos: [VideoStream!] @juniper(ownership: "owned")
-
-    @Field({nullable: true})
-    @Column()
-    heroImageUrl: Url @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    posterImageUrl: Url @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    featuredPosterUrls: [Url!] @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    merchandiseStoreUrl: Url @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    socialImageUrl: Url @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    ticketArtworkUrl: Url @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    enableWatermark: Boolean!
-    @Field({nullable: true})
-    @Column()
-    merchandise: [Merchandise!]! @juniper(ownership: "owned")
-    @Field({nullable: true})
-    @Column()
-    createdAt: DateTimeUtc!
-    @Field({nullable: true})
-    @Column()
-    updatedAt: DateTimeUtc!
-   */
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc" })
+  updatedAt: Date;
 }
+
