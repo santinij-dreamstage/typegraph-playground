@@ -5,9 +5,9 @@ import { EventTicketInfo } from "../../entities/EventTicketInfo";
 import { DbGenre, Genre, GenreTransformer } from "../../entities/Genre";
 import { Merchandise } from "../../entities/Merchandise";
 import { CreateEventInput, SearchEvent } from "./CreateEventInput";
-import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface } from "type-graphql";
+import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, UseMiddleware } from "type-graphql";
 import { Repository } from "typeorm";
-import { Context } from "../../types/Context";
+import { GqlContext } from "../../types/GqlContext";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { buildVideoStreams, StreamType, VideoStream } from "../../types/VideoStream";
 import { Events } from "./Events";
@@ -56,7 +56,7 @@ export class EventResolver implements ResolverInterface<Event> {  //implements R
   }
 
   @Mutation(CreateEventInput => Event)
-  addEvent(@Arg("event") _newEvent: CreateEventInput, @Ctx() _ctx: Context): Promise<Event> {
+  addEvent(@Arg("event") _newEvent: CreateEventInput, @Ctx() _ctx: GqlContext): Promise<Event> {
     return new Promise(() => new Event());
   }
 
