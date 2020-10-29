@@ -4,8 +4,7 @@ import { Container } from "typedi";
 import Express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection, useContainer, getConnectionOptions } from "typeorm";
-import { RegisterResolver } from "./modules/user/Register";
-import { EventResolver } from "./modules/event/Resolver";
+import { EventPerformerResolver, EventResolver, EventTicketResolver } from "./modules/event/Resolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 useContainer(Container);
@@ -19,7 +18,7 @@ const main = async () => {
 
 
   const schema = await buildSchema({
-    resolvers: [RegisterResolver, EventResolver],
+    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver],
     container: Container
   });
   const apolloServer = new ApolloServer({ schema });

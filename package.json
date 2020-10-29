@@ -4,11 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@types/validator": "^13.1.0",
     "apollo-server-express": "^2.18.2",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "graphql": "^15.3.0",
+    "graphql-custom-types": "^1.6.0",
     "pg": "^8.4.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.0.0",

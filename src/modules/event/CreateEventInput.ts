@@ -1,6 +1,6 @@
-import { Event } from "../../entity/Event";
+import { Event } from "../../entities/Event";
 import { Field, InputType } from "type-graphql";
-import {Genre} from "./Genre"
+import { Genre } from "../../entities/Genre"
 
 
 @InputType({ description: "Create a new event" })
@@ -13,7 +13,9 @@ export class CreateEventInput implements Partial<Event> {
 }
 
 @InputType({ description: "Find events" })
-export class SearchEvent implements Partial<Event> {
+export class SearchEvent {  
+  //implements Partial<Event> makes sense for updates and mutations but not search 
+  //since we allow null (Genre) here but not for event
   @Field({ nullable: true })
   id?: string;
   @Field({ nullable: true })
