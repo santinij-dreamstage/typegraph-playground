@@ -1,5 +1,5 @@
 import { GraphQLURL } from "graphql-custom-types";
-import { Money } from "../modules/event/Money";
+import { Money } from "../types/Money";
 import { Field, ID, ObjectType } from "type-graphql";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Event } from "./Event";

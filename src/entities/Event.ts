@@ -22,7 +22,7 @@ import { ReminderTimes } from "./ReminderTimes";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 import { IsUrl } from "class-validator";
 import { GraphQLURL } from "graphql-custom-types"
-import { VideoStream } from "../modules/event/VideoStream";
+import { VideoStream } from "../types/VideoStream";
 
 
 @Index(

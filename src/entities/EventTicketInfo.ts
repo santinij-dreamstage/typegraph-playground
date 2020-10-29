@@ -12,7 +12,7 @@ import { DbTicketClass, TicketClass } from "./TicketClass";
 import { Ticket } from "./Ticket";
 import { TicketIntent } from "./TicketIntent";
 import { Field, ID, Int, ObjectType } from "type-graphql";
-import { Money } from "../modules/event/Money";
+import { Money } from "../types/Money";
 
 @Index(
   "event_ticket_info_event_id_ticket_class_id_key",

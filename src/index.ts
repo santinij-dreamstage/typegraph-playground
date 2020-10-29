@@ -4,7 +4,9 @@ import { Container } from "typedi";
 import Express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection, useContainer, getConnectionOptions } from "typeorm";
-import { EventPerformerResolver, EventResolver, EventTicketResolver } from "./modules/event/Resolver";
+import { EventResolver } from "./modules/event/EventResolver";
+import { EventTicketResolver } from "./modules/event-ticket/EventTicketResolver";
+import { EventPerformerResolver } from "./modules/event-performer/EventPerformerResolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 useContainer(Container);
