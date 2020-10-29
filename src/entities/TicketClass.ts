@@ -20,7 +20,7 @@ export class DbTicketClass {
 
   @OneToMany(
     () => EventTicketInfo,
-    (eventTicketInfo) => eventTicketInfo.ticketClass
+    (eventTicketInfo) => eventTicketInfo.dbTicketClass
   )
   eventTicketInfos: EventTicketInfo[];
 }

@@ -10,8 +10,8 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { BookmarkedEvent } from "./BookmarkedEvent";
-import { DbEventStatus } from "./EventStatus";
-import { DbGenre } from "./Genre";
+import { DbEventStatus, EventStatus, EventStatusTransformer } from "./EventStatus";
+import { DbGenre, Genre } from "./Genre";
 import { DsUser } from "./DsUser";
 import { Venue } from "./Venue";
 import { EventPerformer } from "./EventPerformer";
@@ -19,9 +19,10 @@ import { EventTicketInfo } from "./EventTicketInfo";
 import { Merchandise } from "./Merchandise";
 import { ReminderRecipient } from "./ReminderRecipient";
 import { ReminderTimes } from "./ReminderTimes";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, Int, ObjectType } from "type-graphql";
 import { IsUrl } from "class-validator";
 import { GraphQLURL } from "graphql-custom-types"
+import { VideoStream } from "../modules/event/VideoStream";
 
 
 @Index(
@@ -40,6 +41,30 @@ import { GraphQLURL } from "graphql-custom-types"
 @ObjectType()
 @Entity("event", { schema: "public" })
 export class Event extends BaseEntity {
+  //graphql fields added only for ResolverInterface resolution and handled by field resolvers
+  @Field(() => Genre)
+  genre: Genre;
+
+  @Field(() => Venue, { name: "venue" })
+  venueResolver: Venue;
+
+  @Field({nullable: true})
+  genreDescription?: string;
+  
+  
+  @Field(() => [EventPerformer])
+  performers: EventPerformer[]
+
+  @Field(() => [VideoStream], {nullable: true})
+  promoVideos?: VideoStream[]
+
+  @Field(() => [EventTicketInfo])
+  eventTickets: EventTicketInfo[];
+
+  @Field(() => [Merchandise]) 
+  merchandise: Merchandise[];
+
+  //database columns and sometimes graphql fields from here down
   @Field(() => ID)
   @Column("uuid", {
     primary: true,
@@ -60,8 +85,7 @@ export class Event extends BaseEntity {
   @Column("boolean", { name: "is_featured", default: () => "false" })
   isFeatured: boolean;
   
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  @Field(() => [String!], { nullable: true }) 
+  @Field(() => [String], { nullable: true }) 
   @Column("text", { name: "tags", nullable: true, array: true })
   tags?: string[];
 
@@ -104,10 +128,11 @@ export class Event extends BaseEntity {
   @Column("integer", { name: "genre" })
   genreId: number;
 
-  @Column("integer", { name: "event_status_id" })
+  @Field(() => EventStatus, {name: "status"})
+  @Column("integer", { name: "event_status_id", transformer: new EventStatusTransformer() })
   eventStatusId: number;
 
-  @Field({ nullable: true})
+  @Field(() => Int, { nullable: true})
   @Column("integer", { name: "age_restriction", nullable: true })
   ageRestriction?: number;
 
@@ -141,14 +166,14 @@ export class Event extends BaseEntity {
   @Column("text", { name: "promo_playback_ids", nullable: true, array: true })
   promoPlaybackIds?: string[];
 
-  @Field({ nullable: true, name: "createdAt" })
+  @Field({name: "createdAt" })
   @Column("timestamp with time zone", {
     name: "created_time_utc",
     default: () => "timezone('utc', now())",
   })
   createdTimeUtc: Date;
 
-  @Field({ nullable: true, name: "updatedAt" })
+  @Field({ name: "updatedAt" })
   @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc" })
   lastUpdatedTimeUtc: Date;
 
@@ -157,6 +182,7 @@ export class Event extends BaseEntity {
   @Column("text", { name: "social_image_url", nullable: true })
   socialImageUrl?: string;
 
+  @Field({nullable: true})
   @Column("text", { name: "hashtag", nullable: true })
   hashtag?: string;
 
@@ -165,8 +191,7 @@ export class Event extends BaseEntity {
   @Column("text", { name: "ticket_artwork_url", nullable: true })
   ticketArtworkUrl?: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  @Field(() => [GraphQLURL!], { nullable: true })
+  @Field(() => [GraphQLURL], { nullable: true })
   // @IsUrl()
   @Column("text", { name: "featured_poster_urls", nullable: true, array: true })
   featuredPosterUrls?: string[];
@@ -213,7 +238,7 @@ export class Event extends BaseEntity {
 
   @ManyToOne(() => DbGenre, (genre) => genre)
   @JoinColumn([{ name: "genre", referencedColumnName: "id" }])
-  genre: DbGenre;
+  dbGenre: DbGenre;
 
   @ManyToOne(() => DsUser, (dsUser) => dsUser.events)
   @JoinColumn([{ name: "owner_id", referencedColumnName: "id" }])

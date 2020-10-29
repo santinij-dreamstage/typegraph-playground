@@ -8,10 +8,11 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Event } from "./Event";
-import { DbTicketClass } from "./TicketClass";
+import { DbTicketClass, TicketClass } from "./TicketClass";
 import { Ticket } from "./Ticket";
 import { TicketIntent } from "./TicketIntent";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, Int, ObjectType } from "type-graphql";
+import { Money } from "../modules/event/Money";
 
 @Index(
   "event_ticket_info_event_id_ticket_class_id_key",
@@ -35,6 +36,18 @@ export class EventTicketInfo {
   })
   id: string;
 
+  @Field(() => Int, {nullable: true})
+  available: number;
+
+  @Field(() => Int)
+  ticketsSold: number;
+
+  @Field(() => TicketClass)
+  ticketClass: TicketClass;
+
+  @Field(() => Money)
+  price: Money;
+
   @Column("uuid", { name: "event_id", unique: true })
   eventId: string;
 
@@ -54,9 +67,11 @@ export class EventTicketInfo {
   @Column("character varying", { name: "currency_code", length: 3 })
   currencyCode: string;
 
+  @Field({ name: "salesStartAt"})
   @Column("timestamp with time zone", { name: "sales_start_time_utc" })
   salesStartTimeUtc: Date;
 
+  @Field({ name: "salesEndAt" })
   @Column("timestamp with time zone", {
     name: "sales_end_time_utc",
     nullable: true,
@@ -85,7 +100,7 @@ export class EventTicketInfo {
   @JoinColumn([
     { name: "ticket_class_id", referencedColumnName: "ticketClassId" },
   ])
-  ticketClass: DbTicketClass;
+  dbTicketClass: DbTicketClass;
 
   @OneToMany(() => Ticket, (ticket) => ticket.ticket)
   tickets: Ticket[];

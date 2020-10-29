@@ -15,7 +15,7 @@ export class DbGenre {
   @Column("boolean", { name: "is_deleted", default: () => "false" })
   isDeleted: boolean;
 
-  @OneToMany(() => Event, (event) => event.genre)
+  @OneToMany(() => Event, (event) => event.dbGenre)
   events: Event[];
 }
 

@@ -1,9 +1,20 @@
+import { GraphQLURL } from "graphql-custom-types";
+import { Money } from "../modules/event/Money";
+import { Field, ID, ObjectType } from "type-graphql";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Event } from "./Event";
 
 @Index("merchandise_pkey", ["id"], { unique: true })
+@ObjectType()
 @Entity("merchandise", { schema: "public" })
 export class Merchandise {
+
+  @Field(() => Money)
+  price(): Money {
+    return new Money(this.currencyCode, this.priceInCents);
+  }
+
+  @Field(() => ID)
   @Column("uuid", {
     primary: true,
     name: "id",
@@ -11,18 +22,23 @@ export class Merchandise {
   })
   id: string;
 
+  @Field()
   @Column("text", { name: "name" })
   name: string;
 
+  @Field()
   @Column("text", { name: "description" })
   description: string;
 
+  @Field(() => GraphQLURL)
   @Column("text", { name: "thumbnail_url" })
   thumbnailUrl: string;
 
+  @Field(() => GraphQLURL)
   @Column("text", { name: "expanded_image_url" })
   expandedImageUrl: string;
 
+  @Field()
   @Column("boolean", { name: "contains_clothing" })
   containsClothing: boolean;
 
