@@ -8,7 +8,6 @@ import { EventResolver } from "./modules/event/EventResolver";
 import { EventTicketResolver } from "./modules/event-ticket/EventTicketResolver";
 import { EventPerformerResolver } from "./modules/event-performer/EventPerformerResolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import jwt from "express-jwt";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
 
@@ -18,6 +17,9 @@ const gqlRoute = "/api/graphql";
 const healthRoute = "/api/health";
 const app = Express();
 
+//TODO make env variables and figure out cognito-express/auth 
+const AWS_REGION = "us-east-1"
+const USER_POOL_ID = "us-east-1_TODO_POOL"
 
 const main = async () => {
   const environment = getEnvironment(process.env.NODE_ENV);
@@ -36,7 +38,7 @@ const main = async () => {
 
   app.use(cors({
     credentials: true,
-    origin: getCorsOrigins(environment),  //TODO: only allow localhost
+    origin: getCorsOrigins(environment),
     allowedHeaders: [
       "Accept",
       "Accept-Encoding",
@@ -62,16 +64,6 @@ const main = async () => {
       "Access-Control-Allow-Credentials",]
   }))
 
-  app.use(
-    gqlRoute,
-    jwt({
-      secret: "test-secret",  //TODO this all needs to come from cognito
-      // audience: 'http://myapi/protected',
-      // issuer: 'http://issuer',
-      algorithms: ['RS256'],
-      credentialsRequired: false,
-    })
-  );
 
   const apolloServer = new ApolloServer({
     schema,
