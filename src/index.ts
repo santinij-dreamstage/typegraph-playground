@@ -5,6 +5,7 @@ import Express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection, useContainer, getConnectionOptions } from "typeorm";
 import { EventResolver } from "./modules/event/EventResolver";
+import { PurchasedTicketResolver } from "./modules/tickets/PurchasedTicketResolver";
 import { EventTicketResolver } from "./modules/event-ticket/EventTicketResolver";
 import { EventPerformerResolver } from "./modules/event-performer/EventPerformerResolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
@@ -31,7 +32,7 @@ const main = async () => {
   });
 
   const schema = await buildSchema({
-    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver],
+    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver, PurchasedTicketResolver],
     container: Container
   });
 
@@ -73,6 +74,7 @@ const main = async () => {
       };
       return context;
     },
+    tracing: true,
   });
   app.get(healthRoute, (req, res) => res.send({ "status": "success" }));
   apolloServer.applyMiddleware({ app, path: gqlRoute });

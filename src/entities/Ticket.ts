@@ -1,16 +1,19 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
+  UpdateDateColumn,
 } from "typeorm";
 import { DsUser } from "./DsUser";
 import { Promotion } from "./Promotion";
 import { EventTicketInfo } from "./EventTicketInfo";
 import { TicketIntent } from "./TicketIntent";
 import { TicketVoucher } from "./TicketVoucher";
+import { Field, ID } from "type-graphql";
 
 @Index(
   "ticket_ticket_holder_id_event_ticket_id_idx",
@@ -26,7 +29,8 @@ import { TicketVoucher } from "./TicketVoucher";
 )
 @Index("ticket_ticket_id_idx", ["ticketId"], {})
 @Entity("ticket", { schema: "public" })
-export class Ticket {
+export class Ticket extends BaseEntity {
+  @Field(() => ID)
   @Column("uuid", {
     primary: true,
     name: "id",
@@ -36,6 +40,9 @@ export class Ticket {
 
   @Column("uuid", { name: "holder_id" })
   holderId: string;
+
+  @Column("uuid", { name: "purchaser_id" })
+  purchaserId: string;
 
   @Column("uuid", { name: "ticket_id" })
   ticketId: string;
@@ -70,16 +77,15 @@ export class Ticket {
   @Column("timestamp with time zone", { name: "redeemed_at", nullable: true })
   redeemedAt?: Date;
 
+  @Field({ name: "createdAt" })
   @Column("timestamp with time zone", {
     name: "created_time_utc",
     default: () => "timezone('utc', now())",
   })
   createdTimeUtc: Date;
 
-  @Column("timestamp with time zone", {
-    name: "last_updated_time_utc",
-    default: () => "timezone('utc', now())",
-  })
+  @Field({name: "updatedAt"})
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Column("boolean", { name: "is_deleted", default: () => "false" })
@@ -88,6 +94,7 @@ export class Ticket {
   @Column("text", { name: "status", nullable: true })
   status?: string;
 
+  //holder is nullable for profile tickets so define graphql field at a higher level
   @ManyToOne(() => DsUser, (dsUser) => dsUser.tickets)
   @JoinColumn([{ name: "holder_id", referencedColumnName: "id" }])
   holder: DsUser;
@@ -96,6 +103,7 @@ export class Ticket {
   @JoinColumn([{ name: "promotion_id", referencedColumnName: "id" }])
   promotion: Promotion;
 
+  @Field(() => DsUser)
   @ManyToOne(() => DsUser, (dsUser) => dsUser.tickets2)
   @JoinColumn([{ name: "purchaser_id", referencedColumnName: "id" }])
   purchaser: DsUser;

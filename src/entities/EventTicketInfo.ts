@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Event } from "./Event";
-import { DbTicketClass, TicketClass } from "./TicketClass";
+import { DbTicketClass, TicketClass, TicketClassTransformer } from "./TicketClass";
 import { Ticket } from "./Ticket";
 import { TicketIntent } from "./TicketIntent";
 import { Field, ID, Int, ObjectType } from "type-graphql";
@@ -16,12 +16,12 @@ import { Money } from "../types/Money";
 
 @Index(
   "event_ticket_info_event_id_ticket_class_id_key",
-  ["eventId", "ticketClassId"],
+  ["eventId", "ticketClass"],
   { unique: true }
 )
 @Index(
   "event_ticket_info_event_id_ticket_class_id_idx",
-  ["eventId", "ticketClassId"],
+  ["eventId", "ticketClass"],
   {}
 )
 @Index("event_ticket_info_pkey", ["id"], { unique: true })
@@ -42,21 +42,23 @@ export class EventTicketInfo {
   @Field(() => Int)
   ticketsSold: number;
 
-  @Field(() => TicketClass)
-  ticketClass: TicketClass;
 
   @Field(() => Money)
-  price: Money;
+  price(): Money {
+    return new Money(this.currencyCode, this.priceInCents);
+  }
 
   @Column("uuid", { name: "event_id", unique: true })
   eventId: string;
 
+  @Field(() => TicketClass)
   @Column("integer", {
     name: "ticket_class_id",
     unique: true,
+    transformer: new TicketClassTransformer(),
     default: () => "1",
   })
-  ticketClassId: number;
+  ticketClass: number;
 
   @Column("integer", { name: "capacity", nullable: true })
   capacity?: number;
@@ -86,7 +88,7 @@ export class EventTicketInfo {
   createdTimeUtc: Date;
 
   @Field({name: "updatedAt"})
-  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc" })
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Column("boolean", { name: "is_deleted", default: () => "false" })

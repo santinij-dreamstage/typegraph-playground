@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  UpdateDateColumn,
 } from "typeorm";
 import { DsUser } from "./DsUser";
 import { Ticket } from "./Ticket";
@@ -48,10 +49,7 @@ export class Promotion {
   })
   createdTimeUtc: Date;
 
-  @Column("timestamp with time zone", {
-    name: "last_updated_time_utc",
-    default: () => "timezone('utc', now())",
-  })
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Column("boolean", { name: "is_deleted", default: () => "false" })

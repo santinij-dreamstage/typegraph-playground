@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm";
 import { DsUser } from "./DsUser";
 import { Ticket } from "./Ticket";
 import { TicketIntent } from "./TicketIntent";
@@ -36,10 +36,7 @@ export class TicketVoucher {
   })
   createdTimeUtc: Date;
 
-  @Column("timestamp with time zone", {
-    name: "last_updated_time_utc",
-    default: () => "timezone('utc', now())",
-  })
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Column("boolean", { name: "is_deleted", default: () => "false" })

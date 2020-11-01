@@ -174,7 +174,7 @@ export class Event extends BaseEntity {
   createdTimeUtc: Date;
 
   @Field({ name: "updatedAt" })
-  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc" })
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Field(() => GraphQLURL, { nullable: true })

@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from "type-graphql";
-import { BaseEntity, Column, Entity, Index, OneToMany } from "typeorm";
+import { BaseEntity, Column, Entity, Index, OneToMany, UpdateDateColumn } from "typeorm";
 import { Event } from "./Event";
 
 @Index("venue_pkey", ["id"], { unique: true })
@@ -34,10 +34,7 @@ export class Venue extends BaseEntity {
   createdTimeUtc: Date;
 
   @Field({ nullable: true, name: "updatedAt" })
-  @Column("timestamp with time zone", {
-    name: "last_updated_time_utc",
-    default: () => "timezone('utc', now())",
-  })
+  @UpdateDateColumn({ type: "timestamptz", name: "last_updated_time_utc", default: () => "timezone('utc', now())", })
   lastUpdatedTimeUtc: Date;
 
   @Column("boolean", { name: "is_deleted", default: () => "false" })

@@ -4,7 +4,8 @@ import { EventPerformer } from "../../entities/EventPerformer";
 import { EventTicketInfo } from "../../entities/EventTicketInfo";
 import { DbGenre, Genre, GenreTransformer } from "../../entities/Genre";
 import { Merchandise } from "../../entities/Merchandise";
-import { CreateEventInput, SearchEvent } from "./CreateEventInput";
+import { CreateEventInput } from "./CreateEventInput";
+import { SearchEvent } from "../../types/Search";
 import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, UseMiddleware } from "type-graphql";
 import { Repository } from "typeorm";
 import { GqlContext } from "../../types/GqlContext";
@@ -32,6 +33,7 @@ export class EventResolver implements ResolverInterface<Event> {  //implements R
     console.debug(`args: ${JSON.stringify(eventSearch)}`);
 
     const filters = [];
+    //TODO: this currently makes all of these conditions OR
     if (eventSearch) {
       if (eventSearch.id) {
         filters.push({ id: eventSearch.id });

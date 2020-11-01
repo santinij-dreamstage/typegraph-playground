@@ -8,21 +8,12 @@ import { Money } from "../../types/Money";
 
 @Resolver(() => EventTicketInfo)
 export class EventTicketResolver {
-  private readonly ticketClassTransformer: TicketClassTransformer;
 
   constructor(
     @InjectRepository(EventTicketInfo) private readonly eventTicketInfoRepo: Repository<EventTicketInfo>
   ) {
-    this.ticketClassTransformer = new TicketClassTransformer();
   }
 
-  @FieldResolver(() => TicketClass)
-  async ticketClass(@Root() eti: EventTicketInfo): Promise<TicketClass> {
-    console.error('Here we are!');
-    const ticketClass = this.ticketClassTransformer.from(eti.ticketClassId);
-    return ticketClass;
-
-  }
   @FieldResolver(() => Int, { nullable: true })
   async available(@Root() _eti: EventTicketInfo): Promise<number | undefined> {
     //TODO: this needs to do something
@@ -41,10 +32,5 @@ export class EventTicketResolver {
       .andWhere("eti.id = :id", { id: eti.id })
       .groupBy("eti.id")
       .getRawOne();
-  }
-
-  @FieldResolver(() => Money)
-  async price(@Root() eti: EventTicketInfo): Promise<Money> {
-    return new Money(eti.currencyCode, eti.priceInCents);
   }
 }
