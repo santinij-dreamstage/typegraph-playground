@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  Repository,
   UpdateDateColumn,
 } from "typeorm";
 import { BookmarkedEvent } from "./BookmarkedEvent";
@@ -41,6 +42,23 @@ import { VideoStream } from "../types/VideoStream";
 @ObjectType()
 @Entity("event", { schema: "public" })
 export class Event extends BaseEntity {
+
+  public static async getEventFromEventTicketInfoId(eventRepo: Repository<Event>, eventTicketInfoId: string): Promise<Event> {
+    const event = await eventRepo
+      .createQueryBuilder("event")
+      .select("event")
+      .innerJoin(EventTicketInfo, "eti")
+      .where("eti.id = :id", { id: eventTicketInfoId })
+      .getOne();
+  
+    if (!event) {
+      throw new Error(`Event not found for EventTicketInfo: ${eventTicketInfoId}`);
+    }
+    else {
+      return event;
+    }
+  }
+
   //graphql fields added only for ResolverInterface resolution and handled by field resolvers
   @Field(() => Genre)
   genre: Genre;
@@ -50,7 +68,6 @@ export class Event extends BaseEntity {
 
   @Field({nullable: true})
   genreDescription?: string;
-  
   
   @Field(() => [EventPerformer])
   performers: EventPerformer[]

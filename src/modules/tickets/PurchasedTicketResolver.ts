@@ -68,19 +68,7 @@ async purchasedTickets(@Arg("search", () => ID, { nullable: true }) ticketId?: s
 
     @FieldResolver(() => Event)
     async event(@Root() ticket: PurchasedTicket): Promise<Event> {
-        const event = await this.eventRepo
-        .createQueryBuilder("event")
-        .select("event")
-        .innerJoin(EventTicketInfo, "eti")
-        .where("eti.id = :id", {id: ticket.ticketId})
-        .getOne();
-
-        if (!event) {
-            throw new Error(`Event not found for EventTicketInfo: ${ticket.ticketId}`);
-        }
-        else {
-            return event;
-        }
+        return Event.getEventFromEventTicketInfoId(this.eventRepo, ticket.id);
     }
 
     @FieldResolver()
@@ -105,7 +93,8 @@ async purchasedTickets(@Arg("search", () => ID, { nullable: true }) ticketId?: s
     
     @FieldResolver()
     async purchasedAt(@Root() ticket: PurchasedTicket): Promise<Date>{
-        return ticket.purchaseTimeUtc!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return ticket.purchaseTimeUtc!; //purchased tickets are required to have a purchase time!
     }
     @FieldResolver()
     async createdAt(@Root() ticket: PurchasedTicket): Promise<Date> {

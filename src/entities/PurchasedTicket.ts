@@ -2,7 +2,7 @@ import { DsUser } from "./DsUser";
 import { EventTicketInfo } from "./EventTicketInfo";
 import { VideoStream } from "../types/VideoStream";
 import { Event } from "./Event";
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import { Pagination } from "../types/Pagination";
 import {Ticket} from "./Ticket";
 import { Entity } from "typeorm";

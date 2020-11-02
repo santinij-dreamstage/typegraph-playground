@@ -11,6 +11,7 @@ import { EventPerformerResolver } from "./modules/event-performer/EventPerformer
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
+import { ProfileTicketResolver } from "./modules/tickets/ProfileTicketResolver";
 
 useContainer(Container);
 
@@ -32,7 +33,7 @@ const main = async () => {
   });
 
   const schema = await buildSchema({
-    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver, PurchasedTicketResolver],
+    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver, PurchasedTicketResolver, ProfileTicketResolver],
     container: Container
   });
 
