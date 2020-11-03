@@ -63,11 +63,14 @@ export class Event extends BaseEntity {
   @Field(() => Genre)
   genre: Genre;
 
+  @Field(() => DsUser, {nullable: true})
+  owner?: DsUser;
+
   @Field(() => Venue, { name: "venue" })
   venueResolver: Venue;
 
-  @Field({nullable: true})
-  genreDescription?: string;
+  @Field()
+  genreDescription: string;
   
   @Field(() => [EventPerformer])
   performers: EventPerformer[]
@@ -144,6 +147,9 @@ export class Event extends BaseEntity {
 
   @Column("integer", { name: "genre" })
   genreId: number;
+
+  @Column("uuid", { name: "owner_id" })
+  ownerId: string;
 
   @Field(() => EventStatus, {name: "status"})
   @Column("integer", { name: "event_status_id", transformer: new EventStatusTransformer() })
@@ -259,7 +265,7 @@ export class Event extends BaseEntity {
 
   @ManyToOne(() => DsUser, (dsUser) => dsUser.events)
   @JoinColumn([{ name: "owner_id", referencedColumnName: "id" }])
-  owner: DsUser;
+  dbOwner: DsUser;
 
   @ManyToOne(() => Venue, (venue) => venue.events)
   @JoinColumn([{ name: "venue_id", referencedColumnName: "id" }])

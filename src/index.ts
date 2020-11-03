@@ -22,6 +22,9 @@ const app = Express();
 //TODO make env variables and figure out cognito-express/auth 
 const AWS_REGION = "us-east-1"
 const USER_POOL_ID = "us-east-1_TODO_POOL"
+//REVIEW:
+//dataloader: https://github.com/MichalLytek/type-graphql/issues/51 & https://github.com/slaypni/type-graphql-dataloader
+//pagination: https://github.com/MichalLytek/type-graphql/issues/142
 
 const main = async () => {
   const environment = getEnvironment(process.env.NODE_ENV);

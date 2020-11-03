@@ -1,7 +1,5 @@
-import { SearchEvent } from "src/types/Search";
-import { Column, Entity, Index, JoinColumn, ManyToOne, Repository, UpdateDateColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm";
 import { DsUser } from "./DsUser";
-import { ProfileTicket } from "./ProfileTicket";
 import { Ticket } from "./Ticket";
 import { TicketIntent } from "./TicketIntent";
 

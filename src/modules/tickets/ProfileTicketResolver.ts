@@ -5,7 +5,7 @@ import { GqlContext } from "../../types/GqlContext";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { Event } from "../../entities/Event";
 import { EventTicketInfo } from "../../entities/EventTicketInfo";
-import { IProfileTicketQueryResult, ProfileTicket, ProfileTickets, ProfileTicketStatus, ProfileTicketType, SearchProfileTicket } from "../../entities/ProfileTicket";
+import { IProfileTicketQueryResult, IProfileTicketSearch, ProfileTicket, ProfileTickets, ProfileTicketStatus, ProfileTicketType, SearchProfileTicket } from "../../entities/ProfileTicket";
 import { DsUser } from "../../entities/DsUser";
 import { Pagination } from "../../types/Pagination";
 import { TicketVoucher } from "../../entities/TicketVoucher";
@@ -28,22 +28,14 @@ export class ProfileTicketResolver implements ResolverInterface<ProfileTicket> {
     async profileTickets(@Arg("search", () => SearchProfileTicket, { nullable: true }) search?: SearchProfileTicket): Promise<ProfileTickets> {
         console.debug(`args: ${JSON.stringify(search)}`);
 
-        // let filters: any = {};
-        // if (search) {
-        //     if (search.id) {
-        //         filters.id = search.id;
-        //     }
-        //     if (search.status) {
-        //         filters.status = search.status;
-        //     }
-        // }
-        // filters.purchaseTimeUtc = Not(IsNull());
-        
-        const user_id = "cd6b69d6-8091-499b-96eb-31ca95761a89"; 
-
         //TODO: user real bearer ID and pass search object rather than ID string to these two
-        const tickets = await ProfileTicket.getTickets(this.ticketRepo, user_id) || [];
-        const vouchers = await ProfileTicket.getTicketVouchers(this.voucherRepo, user_id) || [];
+        const userId = "cd6b69d6-8091-499b-96eb-31ca95761a89"; 
+        const ticketSearch: IProfileTicketSearch = {
+            userId: userId,
+            search: search,
+        }
+        const tickets = await ProfileTicket.getOwnedTickets(this.ticketRepo, ticketSearch) || [];
+        const vouchers = await ProfileTicket.getTicketVouchers(this.voucherRepo, ticketSearch) || [];
         const profileTickets = vouchers.concat(tickets);
 
         return new ProfileTickets(profileTickets, new Pagination(1));
@@ -76,7 +68,6 @@ export class ProfileTicketResolver implements ResolverInterface<ProfileTicket> {
 
     @FieldResolver(() => ProfileTicketStatus)
     async ticketStatus(@Root() ticket: IProfileTicketQueryResult): Promise<ProfileTicketStatus> {
-        //TODO: this needs to be the ticket and voucher status not just ticket
         switch (ticket.status) {
             case "Purchased":
                 return ProfileTicketStatus.Purchased;

@@ -57,7 +57,7 @@ bookmarkedEvents:BookmarkedEvent[];
 
 devices:Device[];
 
-@OneToMany(()=>Event,event=>event.owner)
+@OneToMany(()=>Event,event=>event.dbOwner)
 
 
 events:Event[];
