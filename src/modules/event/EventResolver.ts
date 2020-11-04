@@ -6,7 +6,7 @@ import { DbGenre, Genre, GenreTransformer } from "../../entities/Genre";
 import { Merchandise } from "../../entities/Merchandise";
 import { CreateEventInput } from "./CreateEventInput";
 import { SearchEvent, SearchPerformer } from "../../types/Search";
-import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, UseMiddleware, Info } from "type-graphql";
+import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, Info } from "type-graphql";
 import { Repository } from "typeorm";
 import { GqlContext } from "../../types/GqlContext";
 import { InjectRepository } from "typeorm-typedi-extensions";

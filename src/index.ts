@@ -2,16 +2,11 @@ import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import { Container } from "typedi";
 import Express from "express";
-import { buildSchema } from "type-graphql";
 import { createConnection, useContainer, getConnectionOptions } from "typeorm";
-import { EventResolver } from "./modules/event/EventResolver";
-import { PurchasedTicketResolver } from "./modules/tickets/PurchasedTicketResolver";
-import { EventTicketResolver } from "./modules/event-ticket/EventTicketResolver";
-import { EventPerformerResolver } from "./modules/event-performer/EventPerformerResolver";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
-import { ProfileTicketResolver } from "./modules/tickets/ProfileTicketResolver";
+import { createSchema } from "./createSchema";
 // import { Authenticator } from "./middleware/Authenticator";
 
 useContainer(Container);
@@ -36,11 +31,7 @@ const main = async () => {
     }))
   });
 
-  const schema = await buildSchema({
-    resolvers: [EventResolver, EventPerformerResolver, EventTicketResolver, PurchasedTicketResolver, ProfileTicketResolver],
-    container: Container
-  });
-
+  const schema = await createSchema(Container);
 
   app.use(cors({
     credentials: true,
