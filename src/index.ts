@@ -7,9 +7,12 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
 import { createSchema } from "./createSchema";
-// import { Authenticator } from "./middleware/Authenticator";
 
 import CognitoExpress from "cognito-express";
+import { nextTick } from "process";
+
+// import { Authenticator } from "./middleware/Authenticator";
+
 useContainer(Container);
 
 const gqlRoute = "/api/graphql";
@@ -25,7 +28,12 @@ const USER_POOL_ID = "us-east-1_TODO_POOL"
 
 const main = async () => {
   const environment = getEnvironment(process.env.NODE_ENV);
-
+  const cognitoExpress = new CognitoExpress({
+    region: "us-east-1",
+    cognitoUserPoolId: "us-east-1_LMhgpqpZz",
+    tokenUse: "id", //Possible Values: access | id
+    tokenExpiration: 3600000 //Up to default expiration of 1 hour (3600000 ms)
+  });
   await getConnectionOptions().then(connectionOptions => {
     return createConnection(Object.assign(connectionOptions, {
       namingStrategy: new SnakeNamingStrategy()
@@ -74,18 +82,19 @@ const main = async () => {
     },
     tracing: true,
   });
-  app.use(function(req, res, next) {
-    console.log("idk");
-    console.log(CognitoExpress)
-    const cognitoExpress = new CognitoExpress({
-      region: "us-east-1",
-      cognitoUserPoolId: "us-east-1_dXlFef73t",
-      tokenUse: "access", //Possible Values: access | id
-      tokenExpiration: 3600000 //Up to default expiration of 1 hour (3600000 ms)
-    });
-    console.log(cognitoExpress);
-    next();
-  });
+  // app.use(function(req, res, next) {
+  //   if(req.headers.authorization) {
+  //     const auth = req.headers.authorization.split(' ')[1];
+  //     cognitoExpress.validate(auth, (err, resposne) => {
+  //       console.log(err);
+  //       console.log(resposne);
+  //       res.locals.cognitoUser = resposne;
+        
+  //       next();
+  //     });
+  //   }
+  //   next();
+  // });
   app.get(healthRoute, (req, res) => res.send({ "status": "success" }));
   apolloServer.applyMiddleware({ app, path: gqlRoute });
 

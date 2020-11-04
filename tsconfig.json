@@ -28,5 +28,9 @@
     "rootDir": "src"
   },
   "exclude": ["node_modules"],
-  "include": ["src/cognito-express-types.d.ts", "./src/**/*.tsx", "./src/**/*.ts", ]
+  "include": [
+    "src/other-types.d.ts", 
+    "./src/**/*.tsx", 
+    "./src/**/*.ts", 
+  ]
 }
