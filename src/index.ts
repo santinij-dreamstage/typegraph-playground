@@ -12,6 +12,7 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
 import { ProfileTicketResolver } from "./modules/tickets/ProfileTicketResolver";
+// import { Authenticator } from "./middleware/Authenticator";
 
 useContainer(Container);
 
@@ -69,6 +70,7 @@ const main = async () => {
       "Access-Control-Allow-Credentials",]
   }))
 
+  // const cognito = Authenticator.initializeFor(USER_POOL_ID, environment);
 
   const apolloServer = new ApolloServer({
     schema,

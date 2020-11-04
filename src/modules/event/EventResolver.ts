@@ -37,7 +37,6 @@ export class EventResolver implements ResolverInterface<Event> {
     //TODO: do we want to use lookahead / info parsing to inspect the field values to filter up front?
     //https://www.npmjs.com/package/graphql-parse-resolve-info
     const filters: any = {};
-    //TODO: this currently makes all of these conditions OR
     if (eventSearch) {
       if (eventSearch.id) {
         filters.id = eventSearch.id;
