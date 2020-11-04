@@ -24,7 +24,7 @@ function buildThumbnailUrl(playbackId: string, thumbnailTime?: number) {
 
 
 export function buildVideoStreams(playbackIds: string[], type: StreamType): VideoStream[] {
-    const videos = [];
+    const videos: VideoStream[] = [];
     for (const promo of playbackIds) {
         videos.push(new VideoStream(promo, type));
     }

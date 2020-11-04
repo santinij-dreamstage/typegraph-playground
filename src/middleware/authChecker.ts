@@ -4,6 +4,7 @@ import { MiddlewareFn } from "type-graphql";
 //used via @UseMiddleware(IsAuth) on resolver (root or field)
 export const IsAuth: MiddlewareFn<GqlContext> = async ({ context }, next) => {
   const auth = context.req.headers.authorization;
+  console.log("Authing");
   if (!auth) {
     throw new Error("Unauthorized");
   }

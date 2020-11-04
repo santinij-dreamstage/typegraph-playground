@@ -9,6 +9,7 @@ import { getCorsOrigins, getEnvironment } from "./util";
 import { createSchema } from "./createSchema";
 // import { Authenticator } from "./middleware/Authenticator";
 
+import CognitoExpress from "cognito-express";
 useContainer(Container);
 
 const gqlRoute = "/api/graphql";
@@ -72,6 +73,18 @@ const main = async () => {
       return context;
     },
     tracing: true,
+  });
+  app.use(function(req, res, next) {
+    console.log("idk");
+    console.log(CognitoExpress)
+    const cognitoExpress = new CognitoExpress({
+      region: "us-east-1",
+      cognitoUserPoolId: "us-east-1_dXlFef73t",
+      tokenUse: "access", //Possible Values: access | id
+      tokenExpiration: 3600000 //Up to default expiration of 1 hour (3600000 ms)
+    });
+    console.log(cognitoExpress);
+    next();
   });
   app.get(healthRoute, (req, res) => res.send({ "status": "success" }));
   apolloServer.applyMiddleware({ app, path: gqlRoute });
