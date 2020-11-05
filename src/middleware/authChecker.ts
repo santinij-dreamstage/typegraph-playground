@@ -1,4 +1,4 @@
-import { GqlContext } from "../types/GqlContext";
+import { GqlContext } from "../graphql/GqlContext";
 import { MiddlewareFn } from "type-graphql";
 import { AuthenticationError } from "apollo-server-express";
 

@@ -1,0 +1,350 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bookmarked_event {
+  id                    String   @id @default(dbgenerated())
+  user_id               String
+  event_id              String
+  created_time_utc      DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated())
+  is_deleted            Boolean  @default(false)
+  event                 event    @relation(fields: [event_id], references: [id])
+  ds_user               ds_user  @relation(fields: [user_id], references: [id])
+
+  @@index([user_id, event_id], name: "bookmarked_event_user_id_event_id_idx")
+}
+
+model device {
+  id                    String    @id @default(dbgenerated())
+  owner_id              String
+  device_identifier     String?
+  device_model          String?
+  auth_token            String?
+  activated_at_utc      DateTime?
+  created_time_utc      DateTime  @default(dbgenerated())
+  last_updated_time_utc DateTime  @default(dbgenerated())
+  is_deleted            Boolean   @default(false)
+  ds_user               ds_user   @relation(fields: [owner_id], references: [id])
+
+  @@unique([owner_id, device_identifier], name: "device_akey1")
+}
+
+model device_activation_codes {
+  id                    String   @id @default(dbgenerated())
+  device_identifier     String
+  activation_code       String
+  created_time_utc      DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated())
+
+  @@index([device_identifier, activation_code], name: "device_activation_codes_device_identifier_activation_codes_idx")
+}
+
+model ds_user {
+  id                                  String             @id
+  stripe_customer_id                  String?
+  accepted_tos_utc                    DateTime?
+  chat_auth_token                     String?
+  created_time_utc                    DateTime           @default(dbgenerated())
+  last_updated_time_utc               DateTime           @default(dbgenerated())
+  is_deleted                          Boolean            @default(false)
+  cognito_id                          String
+  bookmarked_event                    bookmarked_event[]
+  device                              device[]
+  event                               event[]
+  performer                           performer?
+  promotion                           promotion[]
+  remindee                            remindee[]
+  ticket_ds_userToticket_holder_id    ticket[]           @relation("ds_userToticket_holder_id")
+  ticket_ds_userToticket_purchaser_id ticket[]           @relation("ds_userToticket_purchaser_id")
+  ticket_intent                       ticket_intent[]
+  ticket_voucher                      ticket_voucher[]
+}
+
+model event {
+  id                       String               @id @default(dbgenerated())
+  owner_id                 String
+  name                     String
+  description              String?
+  is_featured              Boolean              @default(false)
+  genre                    Int
+  tags                     String[]
+  published_time_utc       DateTime?
+  scheduled_start_time_utc DateTime
+  scheduled_end_time_utc   DateTime
+  start_time_utc           DateTime?
+  end_time_utc             DateTime?
+  canceled_time_utc        DateTime?
+  venue_id                 String
+  age_restriction          Int?
+  event_status_id          Int
+  poster_image_url         String?
+  hero_image_url           String?
+  stream_key               String?
+  playback_id              String?
+  replay_id                String?
+  asset_id                 String?
+  merchandise_store_url    String?
+  promo_playback_ids       String[]
+  created_time_utc         DateTime             @default(dbgenerated())
+  last_updated_time_utc    DateTime             @default(dbgenerated())
+  social_image_url         String?
+  hashtag                  String?
+  ticket_artwork_url       String?
+  featured_poster_urls     String[]
+  slug                     String?              @unique
+  short_description        String?
+  social_description       String?
+  show_end_message         String?
+  background_color         String?
+  accent_color             String?
+  enable_watermark         Boolean              @default(true)
+  is_deleted               Boolean              @default(false)
+  event_status             event_status         @relation(fields: [event_status_id], references: [event_status_id])
+  genre_eventTogenre       genre                @relation(fields: [genre], references: [id])
+  ds_user                  ds_user              @relation(fields: [owner_id], references: [id])
+  venue                    venue                @relation(fields: [venue_id], references: [id])
+  bookmarked_event         bookmarked_event[]
+  event_performer          event_performer[]
+  event_ticket_info        event_ticket_info[]
+  merchandise              merchandise[]
+  reminder_recipient       reminder_recipient[]
+  reminder_times           reminder_times?
+
+  @@index([scheduled_start_time_utc, scheduled_end_time_utc], name: "event_scheduled_start_time_utc_scheduled_end_time_utc_idx")
+  @@index([start_time_utc, end_time_utc], name: "event_start_time_utc_end_time_utc_idx")
+  @@index([venue_id], name: "event_venue_id_idx")
+}
+
+model event_performer {
+  id                      String    @id @default(dbgenerated())
+  performer_id            String
+  event_id                String
+  is_sound_check_complete Boolean   @default(false)
+  is_invite_accepted      Boolean   @default(false)
+  is_invite_sent          Boolean   @default(false)
+  created_time_utc        DateTime  @default(dbgenerated())
+  last_updated_time_utc   DateTime  @default(dbgenerated())
+  is_deleted              Boolean   @default(false)
+  event                   event     @relation(fields: [event_id], references: [id])
+  performer               performer @relation(fields: [performer_id], references: [id])
+
+  @@unique([event_id, performer_id], name: "event_performer_akey1")
+  @@index([performer_id, event_id], name: "event_performer_performer_id_event_id_idx")
+}
+
+model event_status {
+  event_status_id Int     @id
+  name            String  @unique
+  description     String?
+  is_deleted      Boolean @default(false)
+  event           event[]
+}
+
+model event_ticket_info {
+  id                    String          @id @default(dbgenerated())
+  event_id              String
+  ticket_class_id       Int             @default(1)
+  capacity              Int?
+  price_in_cents        Int
+  currency_code         String
+  sales_start_time_utc  DateTime
+  sales_end_time_utc    DateTime?
+  created_time_utc      DateTime        @default(dbgenerated())
+  last_updated_time_utc DateTime        @default(dbgenerated())
+  is_deleted            Boolean         @default(false)
+  event                 event           @relation(fields: [event_id], references: [id])
+  ticket_class          ticket_class    @relation(fields: [ticket_class_id], references: [ticket_class_id])
+  promotion             promotion[]
+  ticket                ticket[]
+  ticket_intent         ticket_intent[]
+
+  @@unique([event_id, ticket_class_id], name: "event_ticket_info_event_id_ticket_class_id_key")
+  @@index([event_id, ticket_class_id], name: "event_ticket_info_event_id_ticket_class_id_idx")
+}
+
+model genre {
+  id         Int     @id
+  name       String  @unique
+  is_deleted Boolean @default(false)
+  event      event[]
+}
+
+model merchandise {
+  id                    String   @id @default(dbgenerated())
+  name                  String
+  description           String
+  thumbnail_url         String
+  expanded_image_url    String
+  contains_clothing     Boolean
+  price_in_cents        Int
+  currency_code         String
+  event_id              String
+  created_time_utc      DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated())
+  is_deleted            Boolean  @default(false)
+  event                 event    @relation(fields: [event_id], references: [id])
+}
+
+model notification_list {
+  email      String  @id
+  is_deleted Boolean @default(false)
+}
+
+model performer {
+  id                    String            @id
+  act_name              String
+  description           String?
+  biography             String?
+  website               String?
+  created_time_utc      DateTime          @default(dbgenerated())
+  last_updated_time_utc DateTime          @default(dbgenerated())
+  is_deleted            Boolean           @default(false)
+  ds_user               ds_user           @relation(fields: [id], references: [id])
+  event_performer       event_performer[]
+
+  @@index([id], name: "performer_id_idx")
+}
+
+model promotion {
+  id                    String             @id @default(dbgenerated())
+  promo_code            String             @unique
+  owner_id              String?
+  discount_percentage   Int
+  quantity_per_event    Int?               @default(0)
+  is_employee_code      Boolean            @default(false)
+  created_time_utc      DateTime           @default(dbgenerated())
+  last_updated_time_utc DateTime           @default(dbgenerated())
+  is_deleted            Boolean            @default(false)
+  event_ticket_info_id  String?
+  event_ticket_info     event_ticket_info? @relation(fields: [event_ticket_info_id], references: [id])
+  ds_user               ds_user?           @relation(fields: [owner_id], references: [id])
+  ticket                ticket[]
+  ticket_intent         ticket_intent[]
+
+  @@index([promo_code, quantity_per_event, discount_percentage], name: "promotion_promo_code_quanity_per_event_discount_percentage_idx")
+}
+
+model remindee {
+  id                 String               @id @default(dbgenerated())
+  phone_number       String               @unique
+  country_code       Int                  @default(1)
+  ds_user_id         String?
+  is_deleted         Boolean              @default(false)
+  ds_user            ds_user?             @relation(fields: [ds_user_id], references: [id])
+  reminder_recipient reminder_recipient[]
+
+  @@index([id, ds_user_id], name: "fki_remindee_id_ds_user_id")
+}
+
+model reminder_recipient {
+  remindee_id String
+  event_id    String
+  is_deleted  Boolean  @default(false)
+  event       event    @relation(fields: [event_id], references: [id])
+  remindee    remindee @relation(fields: [remindee_id], references: [id])
+
+  @@id([remindee_id, event_id])
+}
+
+model reminder_times {
+  event_id      String  @id
+  time_to_event Int     @default(24)
+  is_deleted    Boolean @default(false)
+  event         event   @relation(fields: [event_id], references: [id])
+}
+
+model ticket {
+  id                                   String            @id @default(dbgenerated())
+  holder_id                            String
+  purchaser_id                         String
+  ticket_id                            String
+  promotion_id                         String?
+  stripe_transaction_id                String
+  last_used_time_utc                   DateTime?
+  reservation_expires_time_utc         DateTime          @default(dbgenerated())
+  purchase_time_utc                    DateTime?
+  redemption_code                      String?
+  redeemed_at                          DateTime?
+  created_time_utc                     DateTime          @default(dbgenerated())
+  last_updated_time_utc                DateTime          @default(dbgenerated())
+  is_deleted                           Boolean           @default(false)
+  ticket_intent_id                     String?
+  status                               String?
+  ds_user_ds_userToticket_holder_id    ds_user           @relation("ds_userToticket_holder_id", fields: [holder_id], references: [id])
+  promotion                            promotion?        @relation(fields: [promotion_id], references: [id])
+  ds_user_ds_userToticket_purchaser_id ds_user           @relation("ds_userToticket_purchaser_id", fields: [purchaser_id], references: [id])
+  event_ticket_info                    event_ticket_info @relation(fields: [ticket_id], references: [id])
+  ticket_intent                        ticket_intent?    @relation(fields: [ticket_intent_id], references: [id])
+  ticket_voucher                       ticket_voucher[]
+
+  @@index([promotion_id], name: "ticket_promotion_id_idx")
+  @@index([reservation_expires_time_utc, purchase_time_utc], name: "ticket_reservation_time_utc_purchase_time_utc_idx")
+  @@index([holder_id, ticket_id], name: "ticket_ticket_holder_id_event_ticket_id_idx")
+  @@index([ticket_id], name: "ticket_ticket_id_idx")
+}
+
+model ticket_class {
+  ticket_class_id   Int                 @id
+  name              String              @unique
+  description       String?
+  is_deleted        Boolean             @default(false)
+  event_ticket_info event_ticket_info[]
+}
+
+model ticket_intent {
+  id                     String            @id @default(dbgenerated())
+  event_ticket_info_id   String
+  ticket_count           Int               @default(1)
+  payment_service_id     String
+  payment_service_status String
+  status                 String
+  promotion_id           String?
+  price_in_cents         Int?
+  discount_percentage    Int?
+  ds_user_id             String
+  created_time_utc       DateTime          @default(dbgenerated())
+  last_updated_time_utc  DateTime          @default(dbgenerated())
+  is_deleted             Boolean           @default(false)
+  ds_user                ds_user           @relation(fields: [ds_user_id], references: [id])
+  event_ticket_info      event_ticket_info @relation(fields: [event_ticket_info_id], references: [id])
+  promotion              promotion?        @relation(fields: [promotion_id], references: [id])
+  ticket                 ticket[]
+  ticket_voucher         ticket_voucher[]
+
+  @@index([ds_user_id, event_ticket_info_id], name: "ticket_intent_ds_user_id_event_ticket_info_id_idx")
+  @@index([payment_service_id, is_deleted], name: "ticket_intent_payment_service_id_is_deleted_id_idx")
+}
+
+model ticket_voucher {
+  id                    String        @id @default(dbgenerated())
+  ticket_intent_id      String
+  ticket_code           String        @default(dbgenerated())
+  ds_user_id            String
+  status                String
+  created_time_utc      DateTime      @default(dbgenerated())
+  last_updated_time_utc DateTime      @default(dbgenerated())
+  is_deleted            Boolean       @default(false)
+  ticket_id             String?
+  ds_user               ds_user       @relation(fields: [ds_user_id], references: [id])
+  ticket                ticket?       @relation(fields: [ticket_id], references: [id])
+  ticket_intent         ticket_intent @relation(fields: [ticket_intent_id], references: [id])
+
+  @@index([ds_user_id, ticket_intent_id], name: "ticket_voucher_ds_user_id_ticket_intent_id_idx")
+}
+
+model venue {
+  id                    String   @id @default(dbgenerated())
+  name                  String
+  description           String?
+  is_open               Boolean  @default(false)
+  created_time_utc      DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated())
+  is_deleted            Boolean  @default(false)
+  event                 event[]
+}

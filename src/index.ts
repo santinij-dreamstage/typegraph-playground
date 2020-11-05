@@ -1,16 +1,13 @@
 import "reflect-metadata";
 import { ApolloServer, AuthenticationError } from "apollo-server-express";
-import { Container } from "typedi";
 import Express from "express";
-import { createConnection, useContainer, getConnectionOptions } from "typeorm";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
-import { createSchema } from "./createSchema";
+import { createSchema } from "./graphql/createSchema";
 import CognitoExpress from "cognito-express";
-import { GqlContext } from "./types/GqlContext";
+import { GqlContext } from "./graphql/GqlContext";
+import { PrismaClient } from "@prisma/client";
 
-useContainer(Container);
 
 const gqlRoute = "/api/graphql";
 const healthRoute = "/api/health";
@@ -48,13 +45,7 @@ const main = async () => {
     });
   }
 
-  await getConnectionOptions().then(connectionOptions => {
-    return createConnection(Object.assign(connectionOptions, {
-      namingStrategy: new SnakeNamingStrategy()
-    }))
-  });
-
-  const schema = await createSchema(Container);
+  const schema = await createSchema();
 
   app.use(cors({
     credentials: true,
@@ -86,14 +77,19 @@ const main = async () => {
 
   // const cognito = Authenticator.initializeFor(USER_POOL_ID, environment);
 
+  const prisma = new PrismaClient({
+    log: ['query', 'info', 'warn'],
+  });
+
   const apolloServer = new ApolloServer({
     schema,
     context: async ({ req }) => {
 
       const context: GqlContext = {
         req,
+        prisma: prisma,
       };
-
+  
       if (req.headers.authorization) {
         try {
           const user = await getUser(req.headers.authorization)
