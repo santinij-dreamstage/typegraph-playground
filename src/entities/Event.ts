@@ -47,7 +47,7 @@ export class Event extends BaseEntity {
     const event = await eventRepo
       .createQueryBuilder("event")
       .select("event")
-      .innerJoin("event.eventTickets", "eti")
+      .innerJoin(EventTicketInfo, "eti", "eti.event_id = event.id")
       .where("eti.id = :id", { id: eventTicketInfoId })
       .getOne();
   

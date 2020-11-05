@@ -67,7 +67,7 @@ export class PurchasedTicketResolver implements ResolverInterface<PurchasedTicke
 
     @FieldResolver(() => Event)
     async event(@Root() ticket: PurchasedTicket): Promise<Event> {
-        return Event.getEventFromEventTicketInfoId(this.eventRepo, ticket.id);
+        return Event.getEventFromEventTicketInfoId(this.eventRepo, ticket.ticketId);
     }
 
     @FieldResolver()
