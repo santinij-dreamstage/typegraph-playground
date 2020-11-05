@@ -1,13 +1,11 @@
 import { GqlContext } from "../types/GqlContext";
 import { MiddlewareFn } from "type-graphql";
+import { AuthenticationError } from "apollo-server-express";
 
-//used via @UseMiddleware(IsAuth) on resolver (root or field)
-export const IsAuth: MiddlewareFn<GqlContext> = async ({ context }, next) => {
-  const auth = context.req.headers.authorization;
-  console.log("Authing");
-  if (!auth) {
-    throw new Error("Unauthorized");
+//used via @UseMiddleware(IsLoggedIn) on resolver (root or field)
+export const IsLoggedIn: MiddlewareFn<GqlContext> = async ({ context }, next) => {
+  if (!context.user) {
+    throw new AuthenticationError("Must be logged in");
   }
   return next();
 };
-

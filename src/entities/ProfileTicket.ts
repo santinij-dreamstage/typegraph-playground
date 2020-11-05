@@ -60,7 +60,7 @@ export interface IProfileTicketQueryResult {
 }
 
 export interface IProfileTicketSearch {
-    userId: string;
+    userCognitoId: string;
     search?: SearchProfileTicket;
 }
 
@@ -122,8 +122,10 @@ export class ProfileTicket implements IProfileTicketQueryResult {
                 "ticket.created_time_utc",
                 "ticket.last_updated_time_utc"])
             .innerJoin(TicketIntent, "ticket_intent", "ticket.ticket_intent_id = ticket_intent.id")
-            .where("ticket.holder_id = :id", { id: search.userId })
-
+            .innerJoin("ticket.holder", "DsUser", "cognito_id = :id", { id: search.userCognitoId })
+            //(node: 5062) UnhandledPromiseRejectionWarning:
+            //  Error: Index "ticket_intent_ds_user_id_event_ticket_info_id_idx" 
+            // contains column that is missing in the entity(TicketIntent): dsUserId
         if (search.search) {
             if (search.search.id) {
                 baseQuery.andWhere("ticket.id = :id", { id: search.search.id });
@@ -165,8 +167,8 @@ export class ProfileTicket implements IProfileTicketQueryResult {
                 "ticket_voucher.last_updated_time_utc"])
             .innerJoin(TicketIntent, "ticket_intent", "ticket_voucher.ticket_intent_id = ticket_intent.id")
             .leftJoin(Ticket, "ticket", "ticket_voucher.ticket_id = ticket.id")
+            .innerJoin("ticket_intent.dsUser", "DsUser", "cognito_id = :id", { id: search.userCognitoId })
             .where("(ticket.holder_id IS NULL OR ticket.holder_id <> ticket_intent.ds_user_id)")
-            .andWhere("ticket_intent.ds_user_id = :id", { id: search.userId });
 
         if (search.search) {
             if (search.search.id) {

@@ -1,15 +1,15 @@
 
-import { Resolver, Mutation, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, ID } from "type-graphql";
-import { Repository, IsNull, Not } from "typeorm";
-import { GqlContext } from "../../types/GqlContext";
+import { Resolver, Query, Ctx, Arg, FieldResolver, Root, ResolverInterface, ID, UseMiddleware } from "type-graphql";
+import { Repository} from "typeorm";
 import { InjectRepository } from "typeorm-typedi-extensions";
-import { Ticket } from "../../entities/Ticket";
 import { Event } from "../../entities/Event";
 import { EventTicketInfo } from "../../entities/EventTicketInfo";
-import {PurchasedTicket, PurchasedTickets} from "../../entities/PurchasedTicket";
+import { PurchasedTicket, PurchasedTickets } from "../../entities/PurchasedTicket";
 import { DsUser } from "../../entities/DsUser";
 import { VideoStream, StreamType } from "../../types/VideoStream";
 import { Pagination } from "../../types/Pagination";
+import { IsLoggedIn } from "../../middleware/authChecker";
+import { GqlContext } from "../../types/GqlContext";
 
 @Resolver(() => PurchasedTicket)
 export class PurchasedTicketResolver implements ResolverInterface<PurchasedTicket> {  //implements ResolverInterface<Event>
@@ -23,25 +23,24 @@ export class PurchasedTicketResolver implements ResolverInterface<PurchasedTicke
     }
 
     //#region Queries and Mutations
-@Query(() => PurchasedTickets, {nullable: true})
-async purchasedTickets(@Arg("search", () => ID, { nullable: true }) ticketId?: string): Promise<PurchasedTickets> {
-    console.debug(`args: ${JSON.stringify(ticketId)}`);
+    @Query(() => PurchasedTickets, { nullable: true })
+    @UseMiddleware(IsLoggedIn)
+    async purchasedTickets(@Ctx() ctx: GqlContext, @Arg("search", () => ID, { nullable: true }) ticketId?: string): Promise<PurchasedTickets> {
+        if (ctx.user) {
+            console.debug(`args: ${JSON.stringify(ticketId)}`);
 
-        let filters:any = {};
-        if (ticketId) {
-            filters = {
-                id: ticketId,
-            };
-        }
-        filters.purchaseTimeUtc = Not(IsNull());
+            const baseQuery = this.ticketRepo.createQueryBuilder("ticket")
+                .innerJoin("ticket.holder", "DsUser", "cognito_id = :id", { id: ctx.user.sub })
+                .where("ticket.purchase_time_utc is not null")
 
-        // filters.push({owner_id: "TODO bearer token"});
-        console.debug(`filters: ${JSON.stringify(filters)}`);
-        return new PurchasedTickets(await this.ticketRepo.find(
-            {
-                where: [filters]
+            if (ticketId) {
+                baseQuery.andWhere("ticket.id = :id", { id: ticketId });
             }
-        ), new Pagination(1));
+            const tickets = await baseQuery.getMany();
+            return new PurchasedTickets(tickets, new Pagination(1));
+        } else {
+            return new PurchasedTickets([], new Pagination(1));
+        }
     }
     //#endregion
 
@@ -86,13 +85,13 @@ async purchasedTickets(@Arg("search", () => ID, { nullable: true }) ticketId?: s
         return [new VideoStream('TODO', StreamType.Primary)];
     }
 
-    @FieldResolver(() => [VideoStream], {nullable: true})
+    @FieldResolver(() => [VideoStream], { nullable: true })
     async replayStreams(@Root() _ticket: PurchasedTicket): Promise<VideoStream[]> {
         return [new VideoStream('TODO', StreamType.Primary)];
     }
-    
+
     @FieldResolver()
-    async purchasedAt(@Root() ticket: PurchasedTicket): Promise<Date>{
+    async purchasedAt(@Root() ticket: PurchasedTicket): Promise<Date> {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return ticket.purchaseTimeUtc!; //purchased tickets are required to have a purchase time!
     }

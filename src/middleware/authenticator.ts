@@ -3,6 +3,7 @@ import { Environment } from "../util";
 
 // copied from https://github.com/DreamStageLive/stripe-apigw/blob/master/src/authentication.js
 
+
 async function _cognitorInitializer(userPoolId: string) {
     try {
         // let userPoolId = '';
