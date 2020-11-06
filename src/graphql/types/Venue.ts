@@ -15,8 +15,8 @@ export class Venue{
   is_open: boolean;
 
   @Field({ nullable: true, name: "createdAt" })
-  createdTimeUtc: Date;
+  created_time_utc: Date;
 
   @Field({ nullable: true, name: "updatedAt" })
-  lastUpdatedTimeUtc: Date;
+  last_updated_time_utc: Date;
 }

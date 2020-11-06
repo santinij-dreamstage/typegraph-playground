@@ -81,8 +81,8 @@ export class EventResolver { //implements ResolverInterface<Event> {
   }
 
   @FieldResolver({ nullable: true })
-  async description(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.description || undefined;
+  async description(@Root() event: DbEvent): Promise<string | null> {
+    return event.description;
   }
 
   @FieldResolver()
@@ -166,8 +166,8 @@ export class EventResolver { //implements ResolverInterface<Event> {
   }
 
   @FieldResolver(() => Date, { description: "search unimplemented" })
-  async publishedAt(@Root() event: DbEvent): Promise<Date | undefined> {
-    return event.published_time_utc || undefined;
+  async publishedAt(@Root() event: DbEvent): Promise<Date | null> {
+    return event.published_time_utc;
   }
 
   @FieldResolver(() => Date, { description: "search unimplemented" })
@@ -181,18 +181,18 @@ export class EventResolver { //implements ResolverInterface<Event> {
   }
 
   @FieldResolver(() => Date, { nullable: true, description: "search unimplemented" })
-  async startedAt(@Root() event: DbEvent, @Arg("search", () => Date, { nullable: true }) _startedAfterTime: Date): Promise<Date | undefined> {
-    return event.start_time_utc || undefined;
+  async startedAt(@Root() event: DbEvent, @Arg("search", () => Date, { nullable: true }) _startedAfterTime: Date): Promise<Date | null> {
+    return event.start_time_utc;
   }
 
   @FieldResolver(() => Date, { nullable: true, description: "search unimplemented" })
-  async endedAt(@Root() event: DbEvent, @Arg("search", () => Date, { nullable: true }) _endedBeforeTime: Date): Promise<Date | undefined> {
-    return event.end_time_utc || undefined;
+  async endedAt(@Root() event: DbEvent, @Arg("search", () => Date, { nullable: true }) _endedBeforeTime: Date): Promise<Date | null> {
+    return event.end_time_utc;
   }
 
   @FieldResolver(() => Date, { nullable: true, description: "search unimplemented" })
-  async canceledAt(@Root() event: DbEvent): Promise<Date | undefined> {
-    return event.canceled_time_utc || undefined;
+  async canceledAt(@Root() event: DbEvent): Promise<Date | null> {
+    return event.canceled_time_utc;
   }
 
   @FieldResolver(() => EventStatus)
@@ -201,79 +201,79 @@ export class EventResolver { //implements ResolverInterface<Event> {
   }
 
   @FieldResolver({ nullable: true })
-  async ageRestriction(@Root() event: DbEvent): Promise<number | undefined> {
-    return event.age_restriction || undefined;
+  async ageRestriction(@Root() event: DbEvent): Promise<number | null> {
+    return event.age_restriction;
   }
 
   @FieldResolver(() => GraphQLURL, { nullable: true })
   @IsUrl()
-  async posterImageUrl(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.poster_image_url || undefined;
+  async posterImageUrl(@Root() event: DbEvent): Promise<string | null> {
+    return event.poster_image_url;
   }
 
   @FieldResolver(() => GraphQLURL, { nullable: true })
   @IsUrl()
-  async heroImageUrl(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.hero_image_url || undefined;
+  async heroImageUrl(@Root() event: DbEvent): Promise<string | null> {
+    return event.hero_image_url;
   }
 
   @FieldResolver(() => GraphQLURL, { nullable: true })
   @IsUrl()
-  async merchandiseStoreUrl(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.merchandise_store_url || undefined;
+  async merchandiseStoreUrl(@Root() event: DbEvent): Promise<string | null> {
+    return event.merchandise_store_url;
   }
 
   @FieldResolver(() => GraphQLURL, { nullable: true })
   @IsUrl()
-  async socialImageUrl(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.social_image_url || undefined;
+  async socialImageUrl(@Root() event: DbEvent): Promise<string | null> {
+    return event.social_image_url;
   }
 
   @FieldResolver({ nullable: true })
   @IsUrl()
-  async hashtag(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.hashtag || undefined;
+  async hashtag(@Root() event: DbEvent): Promise<string | null> {
+    return event.hashtag;
   }
 
   @FieldResolver(() => GraphQLURL, { nullable: true })
   @IsUrl()
-  async ticketArtworkUrl(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.ticket_artwork_url || undefined;
+  async ticketArtworkUrl(@Root() event: DbEvent): Promise<string | null> {
+    return event.ticket_artwork_url;
   }
 
   @FieldResolver(() => [GraphQLURL], { nullable: true })
   async featuredPosterUrls(@Root() event: DbEvent): Promise<string[] | undefined> {
-    return event.featured_poster_urls || undefined;
+    return event.featured_poster_urls;
   }
 
   @FieldResolver({ nullable: true })
-  async slug(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.slug || undefined;
+  async slug(@Root() event: DbEvent): Promise<string | null> {
+    return event.slug;
   }
 
   @FieldResolver({ nullable: true })
-  async shortDescription(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.short_description || undefined;
+  async shortDescription(@Root() event: DbEvent): Promise<string | null> {
+    return event.short_description;
   }
 
   @FieldResolver({ nullable: true })
-  async socialDescription(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.social_description || undefined;
+  async socialDescription(@Root() event: DbEvent): Promise<string | null> {
+    return event.social_description;
   }
 
   @FieldResolver({ nullable: true })
-  async showEndMessage(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.show_end_message || undefined;
+  async showEndMessage(@Root() event: DbEvent): Promise<string | null> {
+    return event.show_end_message;
   }
 
   @FieldResolver({ nullable: true })
-  async backgroundColor(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.background_color || undefined;
+  async backgroundColor(@Root() event: DbEvent): Promise<string | null> {
+    return event.background_color;
   }
 
   @FieldResolver({ nullable: true })
-  async accentColor(@Root() event: DbEvent): Promise<string | undefined> {
-    return event.accent_color || undefined;
+  async accentColor(@Root() event: DbEvent): Promise<string | null> {
+    return event.accent_color;
   }
 
   @FieldResolver()

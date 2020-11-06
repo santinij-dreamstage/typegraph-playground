@@ -1,14 +1,13 @@
 import { GraphQLURL } from "graphql-custom-types";
 import { Money } from "./Money";
 import { Field, ID, ObjectType } from "type-graphql";
-import { Event } from "./Event";
 
 @ObjectType()
 export class Merchandise {
 
   @Field(() => Money)
-  price(currencyCode: string, priceInCents: number): Money {
-    return new Money(currencyCode, priceInCents);
+  price(): Money {
+    return new Money(this.currency_code, this.price_in_cents);
   }
 
   @Field(() => ID)
@@ -20,14 +19,18 @@ export class Merchandise {
   @Field()
   description: string;
 
-  @Field(() => GraphQLURL)
-  thumbnailUrl: string;
+  @Field(() => GraphQLURL, { name: "thumbnailUrl"})
+  thumbnail_url: string;
 
-  @Field(() => GraphQLURL)
-  expandedImageUrl: string;
+  @Field(() => GraphQLURL, { name: "thumbnailUrl" })
+  expanded_image_url: string;
 
-  @Field()
-  containsClothing: boolean;
+  @Field({ name: "containsClothing"} )
+  contains_clothing: boolean;
+  
+  price_in_cents: number
+  
+  currency_code: string
 
   createdTimeUtc: Date;
 

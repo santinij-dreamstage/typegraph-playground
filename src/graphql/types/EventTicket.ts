@@ -7,9 +7,12 @@ import { event_ticket_info as DbEventTicketInfo} from "@prisma/client";
 @ObjectType()
 export class EventTicket {
 
-  constructor(eti: DbEventTicketInfo) {
-    this.dbEventTicketInfo = eti;    
-  }
+  // static fromDbModel(eti: DbEventTicketInfo) {
+  //   const ticketInfo = new EventTicket();
+  //   ticketInfo.id = eti.id;
+  //   ticketInfo.price = new Money(eti.currency_code, eti.price_in_cents);
+  //   ticketInfo.ticketClass = 
+  // }
 
   @Field(() => ID)
   id: string;
@@ -37,6 +40,4 @@ export class EventTicket {
 
   @Field()
   updatedAt: Date;
-
-  dbEventTicketInfo: DbEventTicketInfo;
 }

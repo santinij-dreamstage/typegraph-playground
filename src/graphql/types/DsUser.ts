@@ -1,5 +1,4 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import {ds_user as DbUser} from "@prisma/client";
 
 @ObjectType("User")
 export class DsUser {
@@ -24,7 +23,5 @@ lastUpdatedTimeUtc:Date;
 
 @Field(() => ID)
 cognitoId:string;
-
-dbUser: DbUser;
 
 }

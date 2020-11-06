@@ -8,15 +8,15 @@ export class Performer {
 id:string;
 
 @Field({name: "name"})
-actName:string;
+act_name: string;
 
 @Field({ nullable: true })
 description?:string;
 
 @Field({ name: "createdAt" })
-createdTimeUtc:Date;
+created_time_utc:Date;
 
 @Field({ name: "updatedAt" })
-lastUpdatedTimeUtc:Date;
+last_updated_time_utc:Date;
 
 }
