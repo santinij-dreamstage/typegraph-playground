@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import {Request} from "express";
+import { Request } from "express";
 
 export interface GqlContext {
   req: Request;
   prisma: PrismaClient;
+  authorizer: UserPermission;
   user?: UserClaims;
 }
 
@@ -31,5 +32,19 @@ export interface UserClaims {
   'custom:State'?: string;
   'custom:TimeZone'?: string;
   'custom:TransactionTextOpt'?: string;
+}
+
+export interface IAuthorization {
+  isWriteAuthorized(claims: UserClaims): boolean;
+}
+
+export class UserPermission implements IAuthorization {
+  isWriteAuthorized(claims: UserClaims): boolean {
+    const groups = claims['cognito:groups'];
+    if (groups && groups.includes('admin')) {
+      return true;
+    }
+    return false;
+  }
 }
 

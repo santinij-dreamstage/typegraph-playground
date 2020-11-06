@@ -10,7 +10,7 @@ import { venue as DbVenue, event as DbEvent, eventWhereInput } from "@prisma/cli
 import { EventStatus, EventStatusTransformer } from "../types/EventStatus";
 import { GraphQLURL } from "graphql-custom-types";
 import { IsUrl } from "class-validator";
-import { EventTicket } from "../types/EventTicketInfo";
+import { EventTicket } from "../types/EventTicket";
 import { Merchandise } from "../types/Merchandise";
 import { buildVideoStreams, StreamType, VideoStream } from "../types/VideoStream";
 import { EventPerformer } from "../types/EventPerformer";
@@ -153,14 +153,14 @@ export class EventResolver { //implements ResolverInterface<Event> {
 
   @FieldResolver(() => [EventTicket])
   async eventTickets(@Root() event: DbEvent, @Ctx() { prisma }: GqlContext): Promise<DbEventTicketInfo[]> {
-    return prisma.event_ticket_info.findMany({
+    return await prisma.event_ticket_info.findMany({
       where: { event_id: event.id }
-    })
+    });
   }
 
   @FieldResolver(() => [Merchandise])
   async merchandise(@Root() event: DbEvent, @Ctx() { prisma }: GqlContext): Promise<DbMerchandise[]> {
-    return prisma.merchandise.findMany({
+    return await prisma.merchandise.findMany({
       where: { event_id: event.id }
     });
   }

@@ -1,5 +1,5 @@
 import { DsUser } from "./DsUser";
-import { EventTicket } from "./EventTicketInfo";
+import { EventTicket } from "./EventTicket";
 import { Event } from "./Event";
 import { Field, ID, InputType, ObjectType, registerEnumType } from "type-graphql";
 // import { Ticket } from "./Ticket";

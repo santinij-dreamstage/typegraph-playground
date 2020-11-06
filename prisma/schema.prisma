@@ -2,6 +2,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// generates a TON of code. might be useful for figuring out mutation/update schema
+// generator typegraphql {
+//   provider = "typegraphql-prisma"
+// }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -12,7 +17,7 @@ model bookmarked_event {
   user_id               String
   event_id              String
   created_time_utc      DateTime @default(dbgenerated())
-  last_updated_time_utc DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated()) @updatedAt
   is_deleted            Boolean  @default(false)
   event                 event    @relation(fields: [event_id], references: [id])
   ds_user               ds_user  @relation(fields: [user_id], references: [id])
@@ -28,7 +33,7 @@ model device {
   auth_token            String?
   activated_at_utc      DateTime?
   created_time_utc      DateTime  @default(dbgenerated())
-  last_updated_time_utc DateTime  @default(dbgenerated())
+  last_updated_time_utc DateTime  @default(dbgenerated()) @updatedAt
   is_deleted            Boolean   @default(false)
   ds_user               ds_user   @relation(fields: [owner_id], references: [id])
 
@@ -40,7 +45,7 @@ model device_activation_codes {
   device_identifier     String
   activation_code       String
   created_time_utc      DateTime @default(dbgenerated())
-  last_updated_time_utc DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated()) @updatedAt
 
   @@index([device_identifier, activation_code], name: "device_activation_codes_device_identifier_activation_codes_idx")
 }
@@ -49,10 +54,10 @@ model ds_user {
   id                                  String             @id
   stripe_customer_id                  String?
   accepted_tos_utc                    DateTime?
-  chat_auth_token                     String?
   created_time_utc                    DateTime           @default(dbgenerated())
-  last_updated_time_utc               DateTime           @default(dbgenerated())
-  is_deleted                          Boolean            @default(false)
+  last_updated_time_utc               DateTime           @default(dbgenerated()) @updatedAt
+  is_deleted                          Boolean            @default(false) 
+  chat_auth_token                     String?
   cognito_id                          String
   bookmarked_event                    bookmarked_event[]
   device                              device[]
@@ -87,24 +92,24 @@ model event {
   hero_image_url           String?
   stream_key               String?
   playback_id              String?
-  replay_id                String?
-  asset_id                 String?
   merchandise_store_url    String?
   promo_playback_ids       String[]
   created_time_utc         DateTime             @default(dbgenerated())
-  last_updated_time_utc    DateTime             @default(dbgenerated())
+  last_updated_time_utc    DateTime             @default(dbgenerated()) @updatedAt
   social_image_url         String?
   hashtag                  String?
   ticket_artwork_url       String?
-  featured_poster_urls     String[]
   slug                     String?              @unique
   short_description        String?
+  is_deleted               Boolean              @default(false)
+  background_color         String?
+  replay_id                String?
+  asset_id                 String?
+  accent_color             String?
+  featured_poster_urls     String[]
   social_description       String?
   show_end_message         String?
-  background_color         String?
-  accent_color             String?
   enable_watermark         Boolean              @default(true)
-  is_deleted               Boolean              @default(false)
   event_status             event_status         @relation(fields: [event_status_id], references: [event_status_id])
   genre_eventTogenre       genre                @relation(fields: [genre], references: [id])
   ds_user                  ds_user              @relation(fields: [owner_id], references: [id])
@@ -129,7 +134,7 @@ model event_performer {
   is_invite_accepted      Boolean   @default(false)
   is_invite_sent          Boolean   @default(false)
   created_time_utc        DateTime  @default(dbgenerated())
-  last_updated_time_utc   DateTime  @default(dbgenerated())
+  last_updated_time_utc   DateTime  @default(dbgenerated()) @updatedAt
   is_deleted              Boolean   @default(false)
   event                   event     @relation(fields: [event_id], references: [id])
   performer               performer @relation(fields: [performer_id], references: [id])
@@ -156,7 +161,7 @@ model event_ticket_info {
   sales_start_time_utc  DateTime
   sales_end_time_utc    DateTime?
   created_time_utc      DateTime        @default(dbgenerated())
-  last_updated_time_utc DateTime        @default(dbgenerated())
+  last_updated_time_utc DateTime        @default(dbgenerated()) @updatedAt
   is_deleted            Boolean         @default(false)
   event                 event           @relation(fields: [event_id], references: [id])
   ticket_class          ticket_class    @relation(fields: [ticket_class_id], references: [ticket_class_id])
@@ -186,7 +191,7 @@ model merchandise {
   currency_code         String
   event_id              String
   created_time_utc      DateTime @default(dbgenerated())
-  last_updated_time_utc DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated()) @updatedAt
   is_deleted            Boolean  @default(false)
   event                 event    @relation(fields: [event_id], references: [id])
 }
@@ -203,7 +208,7 @@ model performer {
   biography             String?
   website               String?
   created_time_utc      DateTime          @default(dbgenerated())
-  last_updated_time_utc DateTime          @default(dbgenerated())
+  last_updated_time_utc DateTime          @default(dbgenerated()) @updatedAt
   is_deleted            Boolean           @default(false)
   ds_user               ds_user           @relation(fields: [id], references: [id])
   event_performer       event_performer[]
@@ -219,7 +224,7 @@ model promotion {
   quantity_per_event    Int?               @default(0)
   is_employee_code      Boolean            @default(false)
   created_time_utc      DateTime           @default(dbgenerated())
-  last_updated_time_utc DateTime           @default(dbgenerated())
+  last_updated_time_utc DateTime           @default(dbgenerated()) @updatedAt
   is_deleted            Boolean            @default(false)
   event_ticket_info_id  String?
   event_ticket_info     event_ticket_info? @relation(fields: [event_ticket_info_id], references: [id])
@@ -269,11 +274,11 @@ model ticket {
   last_used_time_utc                   DateTime?
   reservation_expires_time_utc         DateTime          @default(dbgenerated())
   purchase_time_utc                    DateTime?
+  created_time_utc                     DateTime          @default(dbgenerated())
+  last_updated_time_utc                DateTime          @default(dbgenerated()) @updatedAt
+  is_deleted                           Boolean           @default(false)
   redemption_code                      String?
   redeemed_at                          DateTime?
-  created_time_utc                     DateTime          @default(dbgenerated())
-  last_updated_time_utc                DateTime          @default(dbgenerated())
-  is_deleted                           Boolean           @default(false)
   ticket_intent_id                     String?
   status                               String?
   ds_user_ds_userToticket_holder_id    ds_user           @relation("ds_userToticket_holder_id", fields: [holder_id], references: [id])
@@ -304,13 +309,13 @@ model ticket_intent {
   payment_service_id     String
   payment_service_status String
   status                 String
+  ds_user_id             String
+  created_time_utc       DateTime          @default(dbgenerated())
+  last_updated_time_utc  DateTime          @default(dbgenerated()) @updatedAt
+  is_deleted             Boolean           @default(false)
   promotion_id           String?
   price_in_cents         Int?
   discount_percentage    Int?
-  ds_user_id             String
-  created_time_utc       DateTime          @default(dbgenerated())
-  last_updated_time_utc  DateTime          @default(dbgenerated())
-  is_deleted             Boolean           @default(false)
   ds_user                ds_user           @relation(fields: [ds_user_id], references: [id])
   event_ticket_info      event_ticket_info @relation(fields: [event_ticket_info_id], references: [id])
   promotion              promotion?        @relation(fields: [promotion_id], references: [id])
@@ -328,7 +333,7 @@ model ticket_voucher {
   ds_user_id            String
   status                String
   created_time_utc      DateTime      @default(dbgenerated())
-  last_updated_time_utc DateTime      @default(dbgenerated())
+  last_updated_time_utc DateTime      @default(dbgenerated()) @updatedAt
   is_deleted            Boolean       @default(false)
   ticket_id             String?
   ds_user               ds_user       @relation(fields: [ds_user_id], references: [id])
@@ -342,9 +347,9 @@ model venue {
   id                    String   @id @default(dbgenerated())
   name                  String
   description           String?
-  is_open               Boolean  @default(false)
   created_time_utc      DateTime @default(dbgenerated())
-  last_updated_time_utc DateTime @default(dbgenerated())
+  last_updated_time_utc DateTime @default(dbgenerated()) @updatedAt
   is_deleted            Boolean  @default(false)
+  is_open               Boolean  @default(false)
   event                 event[]
 }

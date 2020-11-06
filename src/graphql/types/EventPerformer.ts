@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from "type-graphql";
+import { Performer } from "./Performer";
 
 @ObjectType()
 export class EventPerformer {
@@ -8,6 +9,9 @@ export class EventPerformer {
 
   @Field()
   isSoundCheckComplete: boolean;
+
+  @Field()
+  performer: Performer;
 
   @Field()
   isInviteAccepted: boolean;

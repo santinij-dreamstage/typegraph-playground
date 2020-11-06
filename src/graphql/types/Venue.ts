@@ -11,8 +11,8 @@ export class Venue{
   @Field({ nullable: true })
   description?: string;
 
-  @Field()
-  isOpen: boolean;
+  @Field({name: "isOpen"})
+  is_open: boolean;
 
   @Field({ nullable: true, name: "createdAt" })
   createdTimeUtc: Date;

@@ -1,6 +1,6 @@
 import { IsUrl } from "class-validator"
 import { GraphQLURL } from "graphql-custom-types"
-import { Field, Int, ObjectType, registerEnumType } from "type-graphql";
+import { Field, Int, ObjectType , registerEnumType } from "type-graphql";
 
 function parsePlaybackId(playbackId: string): [string, number?] {
     if (playbackId.includes('@')) {
@@ -45,10 +45,10 @@ export class VideoStream {
         this.streamUrl = buildStreamUrl(playback)
     }
 
-    @Field(() => Int, { deprecationReason: "Use thumbnailUrl property instead" })
+    @Field(() => Int, { nullable: true, deprecationReason: "Use thumbnailUrl property instead" })
     thumbnailTime?: number;
 
-    @Field(() => String, { deprecationReason: "Do not build a video from the playbackId, instead use streamUrl which may be signed by jwt" })
+    @Field(() => String, { nullable: true, deprecationReason: "Do not build a video from the playbackId, instead use streamUrl which may be signed by jwt" })
     playbackId: string
 
     @Field(() => GraphQLURL)

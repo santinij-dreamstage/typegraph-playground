@@ -5,7 +5,7 @@ import cors from "cors";
 import { getCorsOrigins, getEnvironment } from "./util";
 import { createSchema } from "./graphql/createSchema";
 import CognitoExpress from "cognito-express";
-import { GqlContext } from "./graphql/GqlContext";
+import { GqlContext, UserPermission } from "./graphql/GqlContext";
 import { PrismaClient } from "@prisma/client";
 
 
@@ -84,10 +84,11 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     context: async ({ req }) => {
-
+      const authorizor = new UserPermission(); //making one per request rather than static
       const context: GqlContext = {
         req,
         prisma: prisma,
+        authorizer: authorizor,
       };
   
       if (req.headers.authorization) {

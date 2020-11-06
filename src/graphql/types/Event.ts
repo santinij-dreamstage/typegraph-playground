@@ -4,7 +4,7 @@ import { Genre } from "./Genre";
 import { DsUser } from "./DsUser";
 import { Venue } from "./Venue";
 import { EventPerformer } from "./EventPerformer";
-import { EventTicket } from "./EventTicketInfo";
+import { EventTicket } from "./EventTicket";
 import { Merchandise } from "./Merchandise";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 import { IsUrl } from "class-validator";
