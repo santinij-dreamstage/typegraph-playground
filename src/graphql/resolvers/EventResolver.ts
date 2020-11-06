@@ -16,6 +16,7 @@ import { buildVideoStreams, StreamType, VideoStream } from "../types/VideoStream
 import { EventPerformer } from "../types/EventPerformer";
 import { ds_user as DbUser, event_performer as DbEventPerformer, event_ticket_info as DbEventTicketInfo, merchandise as DbMerchandise } from "@prisma/client";
 import { DsUser } from "../types/DsUser";
+import {UserRepo} from "../../repository/UserRepo";
 
 @Resolver(() => Event)
 export class EventResolver { //implements ResolverInterface<Event> {
@@ -115,9 +116,7 @@ export class EventResolver { //implements ResolverInterface<Event> {
 
   @FieldResolver(() => DsUser)
   async owner(@Root() event: DbEvent, @Ctx() { prisma }: GqlContext): Promise<DbUser | null> {
-    return prisma.ds_user.findOne({
-      where: { id: event.owner_id }
-    });
+    return await UserRepo.findOneById(prisma, event.owner_id)
   }
 
   @FieldResolver(() => Venue)

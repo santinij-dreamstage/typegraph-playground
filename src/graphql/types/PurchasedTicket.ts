@@ -4,16 +4,17 @@ import { VideoStream } from "./VideoStream";
 import { Event } from "./Event";
 import { Field, ID, ObjectType } from "type-graphql";
 import { Pagination } from "./Pagination";
+import {ticket as DbPurchasedTicket} from "@prisma/client";
 
 @ObjectType()
 export class PurchasedTickets {
-    constructor(tickets: PurchasedTicket[], page: Pagination) {
+    constructor(tickets: DbPurchasedTicket[], page: Pagination) {
         this.matching = tickets;
         this.pagination = page;
     }
     
     @Field(() => [PurchasedTicket])
-    matching: PurchasedTicket[];
+    matching: DbPurchasedTicket[];
 
     @Field(() => Pagination)
     pagination: Pagination
@@ -46,12 +47,12 @@ export class PurchasedTicket {
     @Field(() => [VideoStream], {nullable: true})
     replayStreams: VideoStream[];
 
-    @Field()
-    purchasedAt: Date;
+    @Field(() => Date, { name: "purchasedAt"})
+    purchase_time_utc: Date;
 
-    @Field()
-    createdAt: Date;
+    @Field(() => Date, {name: "createdAt"})
+    created_time_utc: Date;
     
-    @Field()
-    updatedAt: Date;
+    @Field(() => Date, { name: "updatedAt" })
+    last_updated_time_utc: Date;
 }

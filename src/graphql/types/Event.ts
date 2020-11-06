@@ -15,23 +15,6 @@ import { VideoStream } from "./VideoStream";
 @ObjectType()
 export class Event {
 
-  // public static async getEventFromEventTicketInfoId(eventRepo: Repository<Event>, eventTicketInfoId: string): Promise<Event> {
-  //   const event = await eventRepo
-  //     .createQueryBuilder("event")
-  //     .select("event")
-  //     .innerJoin("event.eventTickets", "eti")
-  //     .where("eti.id = :id", { id: eventTicketInfoId })
-  //     .getOne();
-
-  //   if (!event) {
-  //     throw new Error(`Event not found for EventTicketInfo: ${eventTicketInfoId}`);
-  //   }
-  //   else {
-  //     return event;
-  //   }
-  // }
-
-
   @Field(() => ID)
   id: string;
 
