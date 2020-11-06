@@ -1,5 +1,5 @@
 import { event_ticket_info as DbEventTicket, PrismaClient } from "@prisma/client";
-import { throwIfNotFound } from "./EventRepo";
+import { throwIfNotFound } from "./DatabaseRespository";
 
 export class EventTicketInfoRepo {
     static async findOneByIdOrFail(prisma: PrismaClient, id: string): Promise<DbEventTicket> {

@@ -10,7 +10,7 @@ export class EventPerformer {
   @Field()
   isSoundCheckComplete: boolean;
 
-  @Field()
+  @Field(() => Performer)
   performer: Performer;
 
   @Field()

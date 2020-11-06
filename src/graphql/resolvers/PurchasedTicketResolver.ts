@@ -12,6 +12,7 @@ import { event as DbEvent, ds_user as DbUser, ticket as DbTicket, ticketWhereInp
 import { UserRepo } from "../../repository/UserRepo";
 import { EventRepo } from "../../repository/EventRepo";
 import { EventTicketInfoRepo } from "../../repository/EventTicketInfoRepo";
+import { TicketRepo } from "../../repository/TicketRepo";
 
 @Resolver(() => PurchasedTickets)
 export class PurchasedTicketsResolver { // implements ResolverInterface<PurchasedTicket> {
@@ -37,8 +38,8 @@ export class PurchasedTicketResolver { // implements ResolverInterface<Purchased
             if (ticketId) {
                 filters.push({ id: ticketId })
             }
-            filters.push({ ds_user_ds_userToticket_holder_id: { cognito_id: user.sub } })
-            filters.push({ NOT: { purchase_time_utc: null } })
+            filters.push(TicketRepo.ticketHolderCognitoIdFilter(user.sub))
+            filters.push(TicketRepo.isPurchasedFilter())
             const tickets = await prisma.ticket.findMany({
                 where: {
                     AND: filters

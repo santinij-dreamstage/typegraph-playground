@@ -16,9 +16,6 @@ const app = Express();
 //TODO make env variables and figure out cognito-express/auth 
 const AWS_REGION = "us-east-1"
 const USER_POOL_ID = "us-east-1_LMhgpqpZz"
-//REVIEW:
-//dataloader: https://github.com/MichalLytek/type-graphql/issues/51 & https://github.com/slaypni/type-graphql-dataloader
-//pagination: https://github.com/MichalLytek/type-graphql/issues/142
 
 const main = async () => {
   const environment = getEnvironment(process.env.NODE_ENV);
@@ -38,7 +35,6 @@ const main = async () => {
           reject(new AuthenticationError(err));
         }
         else {
-          console.debug(`token: ${JSON.stringify(response)}`);
           resolve(response);
         }
       });
@@ -84,17 +80,17 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     context: async ({ req }) => {
-      const authorizor = new UserPermission(); //making one per request rather than static
+      const authorizer = new UserPermission(); //making one per request rather than static
       const context: GqlContext = {
         req,
-        prisma: prisma,
-        authorizer: authorizor,
+        prisma,
+        authorizer,
       };
   
       if (req.headers.authorization) {
         try {
           const user = await getUser(req.headers.authorization)
-          console.debug("Valid Token: ", user);
+          // console.debug("Valid Token: ", user);
           context.user = user;
         } catch (error) {
           console.error("token error: ", error);

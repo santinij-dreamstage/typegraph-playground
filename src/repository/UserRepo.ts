@@ -1,5 +1,5 @@
 import {ds_user as DbUser, PrismaClient} from "@prisma/client";
-import { throwIfNotFound } from "./EventRepo";
+import { throwIfNotFound } from "./DatabaseRespository";
 
 export class UserRepo {
     static async findOneByIdOrFail(prisma: PrismaClient, id: string): Promise<DbUser> {

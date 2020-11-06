@@ -1,4 +1,5 @@
 import { event as DbEvent, PrismaClient } from "@prisma/client";
+import { throwIfNotFound } from "./DatabaseRespository";
 
 export class EventRepo {
     static async findOneByIdOrFail(prisma: PrismaClient, id: string): Promise<DbEvent> {
@@ -24,9 +25,3 @@ export class EventRepo {
     }
 }
 
-export function throwIfNotFound<T>(value: T | null | undefined): T {
-    if (!value) {
-        throw new Error("This must be something!");
-    }
-    return value;
-}
