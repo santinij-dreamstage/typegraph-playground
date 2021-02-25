@@ -1,0 +1,610 @@
+scalar DateTimeUtc
+scalar Url
+
+"""
+Enumerations
+"""
+enum DiscountType {
+    Percent
+    Flat
+}
+
+enum ProfileTicketType {
+    Standard 
+    Voucher
+}
+
+enum ProfileTicketStatus {
+    Unknown
+    Purchased
+    Refunded
+    Available
+    Redeemed
+    Voided
+}
+
+enum TicketClass {
+    GeneralAdmission
+    Vip
+}
+
+enum EventStatus {
+    Draft,
+    Published,
+    Started,
+    Ended,
+    Completed,
+    Canceled,
+}
+
+enum Genre {
+    Classical,
+    PopRock,
+    RAndBHipHop,
+    Latin,
+    Country,
+    Jazz,
+    Other
+}
+
+enum DeviceModel {
+    AppleTv
+}
+
+enum AssetType {
+    Image,
+    Video
+}
+
+enum StreamType {
+    Primary
+    Additional
+    Promotional
+}
+
+"""
+Describe page of results if multiple are provided
+"""
+type Pagination {
+    previousPage: Int
+    page: Int!
+    nextPage: Int
+}
+
+type Money {
+    currency: String!
+    valueInCents: Int!
+}
+
+type User {
+    id: ID!
+    cognitoId: ID!
+    stripeId: String
+    chatAuthToken: String
+    acceptedTos: DateTimeUtc
+    creditBalance: Int!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Users {
+    matching: [User!]!,
+    pagination: Pagination!,
+}
+
+type Discount {
+    discountType: DiscountType!
+    discountAmount: Int!
+}
+
+type VideoStream {
+    thumbnailTime: Int @deprecated(reason: "Use thumbnailUrl property instead")
+    "Do not build a video from the playbackId, instead use streamUrl which may be signed by jwt"
+    playbackId: String
+    streamUrl: Url
+    thumbnailUrl: Url
+    title: String
+    streamType: StreamType
+}
+
+type Promotion {
+    id: ID!
+    discount: Discount!
+}
+
+"""
+Ticket that has been purchased for an event, by a user for a user
+"""
+type PurchasedTicket {
+    id: ID!
+    owner: User!
+    purchaser: User!
+    ticket: EventTicket!
+    event(search: SearchEvent): Event!
+    promotion: Promotion
+    playbackId: String @deprecated(reason: "Use liveStreams field with streamType Primary")
+    replayId: String @deprecated(reason: "Use replayStreams field with streamType Primary")
+    liveStreams: [VideoStream!]
+    replayStreams: [VideoStream!]
+    purchasedAt(search: DateTimeUtc): DateTimeUtc!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type PurchasedTickets {
+    matching: [PurchasedTicket!]!
+    pagination: Pagination!
+}
+
+type ProfileTicket {
+    id: ID!
+    owner: User
+    purchaser: User!
+    ticketType: ProfileTicketType!
+    ticketStatus: ProfileTicketStatus!
+    eventTicket: EventTicket!
+    event: Event!
+    redemptionCode: ID
+    purchasedAt: DateTimeUtc
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type ProfileTickets {
+    matching: [ProfileTicket!]!
+    pagination: Pagination!
+}
+
+type ReservedTicket {
+    id: ID!
+    purchaser: User!
+    ticket: EventTicket!
+    promotion: Promotion
+    reservationExpiresAt: DateTimeUtc!
+}
+
+type EventTicket {
+    ticketClass: TicketClass!
+    available: Int  # null means no limit
+    ticketsSold: Int!
+    salesStartAt: DateTimeUtc!
+    salesEndAt: DateTimeUtc
+    price: Money!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Performer {
+    id: ID!
+    name: String!
+    description: String
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Performers {
+    matching: [Performer!]!
+    pagination: Pagination!
+}
+
+type EventPerformer {
+    id: ID!
+    performer: Performer!
+    isSoundCheckComplete: Boolean!
+    inviteAccepted: Boolean!
+    inviteSent: Boolean!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Merchandise {
+    id: ID!
+    name: String!
+    description: String!
+    price: Money!
+    thumbnailUrl: Url!
+    expandedImageUrl: Url!
+    containsClothing: Boolean!
+}
+
+type Event {
+    id: ID!
+    name: String!
+    description: String
+    shortDescription: String
+    hashtag: String
+    slug: String
+    accentColor: String
+    backgroundColor: String
+    owner: User # only returned if you are the owner
+    venue: Venue!
+    genre: Genre!
+    genreDescription: String!
+    tags: [String!]
+    featured: Boolean!
+    performers(search: SearchPerformer): [EventPerformer!]!
+    eventTickets: [EventTicket!]!
+    status: EventStatus!
+    scheduledStartTime(search: DateTimeUtc): DateTimeUtc!
+    scheduledEndTime(search: DateTimeUtc): DateTimeUtc!
+    startedAt(search: DateTimeUtc): DateTimeUtc
+    endedAt(search: DateTimeUtc): DateTimeUtc
+    socialDescription: String
+    showEndMessage: String
+    ageRestriction: Int
+    promoVideos: [VideoStream!]
+    heroImageUrl: Url
+    posterImageUrl: Url
+    featuredPosterUrls: [Url!]
+    merchandiseStoreUrl: Url
+    socialImageUrl: Url
+    ticketArtworkUrl: Url
+    enableWatermark: Boolean!
+    merchandise: [Merchandise!]!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Events {
+    matching: [Event!]!
+    pagination: Pagination!
+}
+
+type Venue {
+    id: ID!
+    name: String!
+    description: String
+    isOpen: Boolean!
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Venues {
+    matching: [Venue!]!
+    pagination: Pagination!
+}
+
+type Device {
+    id: ID!
+    owner: User!
+    deviceIdentifier: ID!
+    deviceModel: String
+    authToken: String
+    createdAt: DateTimeUtc!
+    updatedAt: DateTimeUtc!
+}
+
+type Devices {
+    matching: [Device!]!
+    pagination: Pagination!
+}
+
+type GenreInfo {
+    id: Genre!
+    description: String!
+}
+
+type Subscriber {
+    email: String!
+}
+
+type UploadTarget {
+    uploadUrl: Url!
+}
+
+type Query {
+    getGenres: [GenreInfo!]!
+    events(search: SearchEvent, page: SearchPagination): Events!
+    venues(search: SearchVenue, page: SearchPagination): Venues!
+    """Requires the user bearer token and returns tickets that will allow them to view a show"""
+    purchasedTickets(search: ID, page: SearchPagination): PurchasedTickets!
+    profileTickets(search: SearchProfileTicket, page: SearchPagination): ProfileTickets!
+    validatePromotion(promotion: MutUsePromotion!): Promotion
+    devices(search: SearchDevice, page: SearchPagination): Devices!
+    assetUploadTarget(assetType: AssetType!): UploadTarget
+    allMerchandise(search: SearchMerchandise): [Merchandise!]!
+}
+
+"""
+Search Types
+"""
+
+input SearchPerformer {
+    id: ID
+    name: String
+}
+
+input SearchEvent {
+    id: ID
+    name: String
+    genre: Genre
+    featured: Boolean
+    slug: String
+}
+
+input SearchMerchandise {
+    eventId: ID
+}
+
+input SearchVenue {
+    id: ID
+    name: String
+}
+
+input SearchProfileTicket {
+    id: ID
+    status: [ProfileTicketStatus!]
+}
+
+input SearchPagination {
+    page: Int!
+}
+
+input SearchPromotion {
+    id: ID
+}
+
+input SearchDevice {
+    id: ID
+}
+
+"""
+Mutation Types
+"""
+
+input MutMoney {
+    currency: String
+    valueInCents: Int
+}
+
+input MutCreateUser {
+    id: ID!
+    cognitoId: ID # set to ID if not included
+    stripeId: String
+    chatAuthToken: String
+    acceptedTos: DateTimeUtc
+    creditBalance: Int
+}
+
+input MutUser {
+    id: ID!
+    cognitoId: ID
+    stripeId: String
+    chatAuthToken: String
+    acceptedTos: DateTimeUtc
+    creditBalance: Int
+}
+
+input MutDiscount {
+    discountType: DiscountType
+    discountAmount: Int
+    # promo code passed in by client or generated on server?
+}
+
+input MutCreateTicketPurchase {
+    owner: MutUser
+    stripeTransaction: String!
+    ticket: MutEventTicket!
+    # maybe only need id and let the others come from reservation (or update reservation)?
+}
+
+input MutTicketPurchase {
+    id: ID!
+    owner: MutUser
+    ticket: MutEventTicket
+    ticketClass: TicketClass
+    purchasedAt: DateTimeUtc
+}
+
+input MutCreateReservedTicket {
+    owner: MutUser
+    ticket: MutEventTicket!
+    promotion: MutPromotion
+    stripeTransaction: String
+}
+
+input MutReservedTicket {
+    id: ID!
+    owner: MutUser
+    ticket: MutEventTicket
+    stripeTransaction: String
+    promotion: MutPromotion
+}
+
+input MutCreateEventTicket {
+    ticketClass: TicketClass
+    available: Int
+    price: MutMoney
+    salesStartAt: DateTimeUtc
+    salesEndAt: DateTimeUtc
+}
+
+input MutEventTicket {
+    id: ID!
+    ticketClass: TicketClass
+    capacity: Int
+    available: Int
+    price: MutMoney
+    salesStartAt: DateTimeUtc
+    salesEndAt: DateTimeUtc
+}
+
+input MutCreateEvent {
+    name: String!
+    owner: MutUser!
+    description: String
+    shortDescription: String
+    hashtag: String
+    slug: String
+    venue: MutVenue!
+    featured: Boolean,
+    accentColor: String
+    backgroundColor: String
+    genre: Genre!,
+    tags: [String!]
+    performers: [MutCreateEventPerformer!]!
+    eventTickets: [MutCreateEventTicket!]!
+    scheduledStartTime: DateTimeUtc!
+    scheduledEndTime: DateTimeUtc!
+    status: EventStatus!
+    ageRestriction: Int
+    socialDescription: String
+    showEndMessage: String
+    streamKey: String
+    playbackId: String
+    replayId: String
+    promoPlaybackIds: [String!]
+    heroImageUrl: Url
+    posterImageUrl: Url
+    featuredPosterUrls: [Url!]
+    socialImageUrl: Url
+    ticketArtworkUrl: Url
+    merchandiseStoreUrl: Url
+    enableWatermark: Boolean # default true
+}
+
+input MutEvent {
+    id: ID!
+    owner: MutUser
+    name: String
+    description: String
+    shortDescription: String
+    hashtag: String
+    slug: String
+    venue: MutVenue
+    featured: Boolean
+    accentColor: String
+    backgroundColor: String
+    genre: Genre
+    tags: [String]
+    performers: [MutPerformer!]
+    eventTickets: [MutEventTicket!]
+    scheduledStartTime: DateTimeUtc
+    scheduledEndTime: DateTimeUtc
+    startedAt: DateTimeUtc
+    endedAt: DateTimeUtc
+    publishedAt: DateTimeUtc
+    canceledAt: DateTimeUtc
+    status: EventStatus
+    ageRestriction: Int
+    socialDescription: String
+    showEndMessage: String
+    streamKey: String
+    playbackId: String
+    replayId: String
+    promoPlaybackIds: [String!]
+    heroImageUrl: Url
+    posterImageUrl: Url
+    featuredPosterUrls: [Url!]
+    socialImageUrl: Url
+    ticketArtworkUrl: Url
+    merchandiseStoreUrl: Url
+    enableWatermark: Boolean
+}
+
+input MutCreateVenue {
+    name: String!
+    description: String!
+    isOpen: Boolean!
+}
+
+input MutVenue {
+    id: ID!
+    name: String
+    isOpen: Boolean
+    description: String
+}
+
+input MutCreatePerformer {
+    actName: String
+    description: String
+    biography: String
+    website: Url
+}
+
+input MutPerformer {
+    id: ID!
+    actName: String!
+    description: String
+    biography: String
+    website: Url
+}
+
+input MutCreateEventPerformer {
+    performerId: ID!
+    isSoundCheckComplete: Boolean
+    inviteAccepted: Boolean
+    inviteSent: Boolean
+}
+
+input MutEventPerformer {
+    id: ID!
+    performerId: ID
+    isSoundCheckComplete: Boolean
+    inviteAccepted: Boolean
+    inviteSent: Boolean
+}
+
+input MutUsePromotion {
+    promoCode: String!
+    event: MutEvent!
+}
+
+input MutCreatePromotion {
+    promoCode: String!
+    owner: MutUser!
+    discountPercentage: Float
+    quantityPerEvent: Int
+    isEmployeeCode: Boolean
+}
+
+input MutPromotion {
+    id: ID!
+    promoCode: String
+    owner: MutUser
+    discountPercentage: Float
+    quantityPerEvent: Int
+    isEmployeeCode: Boolean
+}
+
+input MutActivateDevice {
+    activationCode: String!
+    refreshToken: String!
+}
+
+input MutDevice {
+    id: ID!
+    deviceModel: String
+    authToken: String
+}
+
+input MutDeleteDevice {
+    id: ID!
+}
+
+input MutChatUser {
+    id: ID! # likely will be the user uuid/sub
+}
+
+type Mutation {
+    createEvent(event: MutCreateEvent!): Event!
+    updateEvent(event: MutEvent!): Event
+    createVenue(venue: MutCreateVenue!): Venue!
+    updateVenue(venue: MutVenue!): Venue
+    createUser(user: MutCreateUser!): User!
+    updateUser(user: MutUser!): User
+    generateUserChatToken(chatUser: MutChatUser!): User
+    createPerformer(user: MutCreatePerformer!): Performer!
+    updatePerformer(user: MutPerformer!): Performer
+    createReservedTicket(ticket: MutCreateReservedTicket!): ReservedTicket!
+    updateReservedTicket(ticket: MutReservedTicket!): ReservedTicket
+    purchaseTicket(ticket: MutCreateTicketPurchase!): PurchasedTicket
+    activateDevice(device: MutActivateDevice!): Device
+    deleteDevice(device: MutDeleteDevice!): Device
+    getNotified(email: String!): Subscriber!
+}
+
+schema {
+    query: Query,
+    mutation: Mutation,
+}
